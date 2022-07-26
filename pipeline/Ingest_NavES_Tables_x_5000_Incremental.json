@@ -1,0 +1,270 @@
+{
+	"name": "Ingest_NavES_Tables_x_5000_Incremental",
+	"properties": {
+		"description": "Ingests up to 5000 tables from source. (Lookup limits to 5000 max.)\nNumber of tables to ingest is set in parameters in 'Ingest All...'",
+		"activities": [
+			{
+				"name": "GetTableNames",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderStoredProcedureName": "[dbo].[usp_List_Source_Tables_By_Source_Name_By_Page]",
+						"storedProcedureParameters": {
+							"SourceName": {
+								"type": "String",
+								"value": {
+									"value": "@{pipeline().parameters.SourceName}",
+									"type": "Expression"
+								}
+							},
+							"offsetSize": {
+								"type": "Int32",
+								"value": {
+									"value": "@{pipeline().parameters.PageSize}",
+									"type": "Expression"
+								}
+							},
+							"pageNo": {
+								"type": "Int32",
+								"value": {
+									"value": "@{pipeline().parameters.pageNo}",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DYWIDAG_LDW_DS",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "LoopTableNames",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetTableNames",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetTableNames').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If table has rows",
+							"description": "If source table has rows",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "LookupRowExistence",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@greater(activity('LookupRowExistence').output.firstRow.RowExistence,0)\n",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "CopyTable_with_timestamp",
+										"description": "If there are no records already, then timestamp = -1. This will ingest ALL data from the source table, if there is any (we've already checked for row existence). timestamp = -2 if error occurred (e.g. the view does not exist?) - don't ingest.",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "LookupTimestamp",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "SELECT * FROM @{item().Table_Name} where  \n    convert(BIGint,convert(varbinary,timestamp,1)) > @{activity('LookupTimestamp').output.firstRow.maxInt}\n    and @{activity('LookupTimestamp').output.firstRow.maxInt}>-2\n\n",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".txt"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "NavES_DS",
+												"type": "DatasetReference"
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "Destination_TableData_Incremental_DataLake_DS",
+												"type": "DatasetReference",
+												"parameters": {
+													"path": {
+														"value": "RAW/@{item().SourceName}/@{item().File_Name}/@{utcNow('yyyy')}/@{utcNow('MM')}/@{utcNow('dd')}",
+														"type": "Expression"
+													},
+													"file": {
+														"value": "@{item().File_Name}",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									},
+									{
+										"name": "LookupTimestamp",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlDWSource",
+												"sqlReaderStoredProcedureName": "[dbo].[usp_Select_Latest_Timestamp_For_Table_Direct]",
+												"storedProcedureParameters": {
+													"SourceName": {
+														"type": "String",
+														"value": {
+															"value": "@{pipeline().parameters.SourceName}",
+															"type": "Expression"
+														}
+													},
+													"schema": {
+														"type": "String",
+														"value": {
+															"value": "@{item().Table_Schema}",
+															"type": "Expression"
+														}
+													},
+													"tbl": {
+														"type": "String",
+														"value": {
+															"value": "@{item().Short_Table_Name}",
+															"type": "Expression"
+														}
+													}
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"dataset": {
+												"referenceName": "DYWIDAG_LDW_DS",
+												"type": "DatasetReference"
+											}
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "LookupRowExistence",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlServerSource",
+									"sqlReaderQuery": {
+										"value": "if exists(select top 1 * from @{item().Table_Name})\nselect 1 as RowExistence\nelse \nselect 0 as RowExistence",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "NavES_DS",
+									"type": "DatasetReference"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"pageNo": {
+				"type": "int",
+				"defaultValue": 1
+			},
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "NavES"
+			},
+			"PageSize": {
+				"type": "int",
+				"defaultValue": 5000
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Incremental Ingestion/Ingest x 5000"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-04-27T20:26:16Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

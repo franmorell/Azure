@@ -1,0 +1,85 @@
+{
+	"name": "SiiGo_Balance_Excel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Datos",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Auxiliar General - Histórico  CARTERA - fixed.xlsx",
+				"folderPath": "test",
+				"container": "siigo"
+			},
+			"range": "B4:P1048576",
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Account in Trial Balance",
+				"type": "String"
+			},
+			{
+				"name": "Nombre Cuenta",
+				"type": "String"
+			},
+			{
+				"name": "ID",
+				"type": "String"
+			},
+			{
+				"name": "Customer Name",
+				"type": "String"
+			},
+			{
+				"name": "invoice #",
+				"type": "String"
+			},
+			{
+				"name": "Date (D/M/Y)",
+				"type": "String"
+			},
+			{
+				"name": "Posting documents",
+				"type": "String"
+			},
+			{
+				"name": "Accounting documents",
+				"type": "String"
+			},
+			{
+				"name": "Description",
+				"type": "String"
+			},
+			{
+				"name": "Cost Center",
+				"type": "String"
+			},
+			{
+				"name": "Cost Center Name",
+				"type": "String"
+			},
+			{
+				"name": "Previous balance",
+				"type": "String"
+			},
+			{
+				"name": "Debit",
+				"type": "String"
+			},
+			{
+				"name": "Credit",
+				"type": "String"
+			},
+			{
+				"name": "New Balance",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,69 @@
+{
+	"name": "pbi_dim_class_categorization_materials_bkpRSI",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "PBI"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "system_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_material",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_supplier",
+				"type": "nvarchar"
+			},
+			{
+				"name": "txt_material_clean",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_category_tree",
+				"type": "nvarchar"
+			},
+			{
+				"name": "flg_baseline_exclusion",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_baseline",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_uom_global",
+				"type": "nvarchar"
+			},
+			{
+				"name": "material_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "material_supplier_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "global_material_uom_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "global_uom_hashkey",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "dim_class_categorization_materials_bkpRSI"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,7 @@
+{
+	"name": "NavES",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "NavES"
+	}
+}

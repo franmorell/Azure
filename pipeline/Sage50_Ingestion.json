@@ -1,0 +1,257 @@
+{
+	"name": "Sage50_Ingestion",
+	"properties": {
+		"activities": [
+			{
+				"name": "LoopTableNames",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetTableNames",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetTableNames').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().TABLE_CATALOG, 'SAGE50_POST' ) ",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Retrieve Sage50 data from API_GET",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "RestSource",
+												"httpRequestTimeout": "00:30:00",
+												"requestInterval": "00.00:00:00.010",
+												"requestMethod": "GET",
+												"additionalHeaders": {
+													"Content-Type": "application/json"
+												},
+												"paginationRules": {
+													"supportRFC5988": "true"
+												}
+											},
+											"sink": {
+												"type": "RestSink",
+												"httpRequestTimeout": "00:01:40",
+												"requestInterval": 10,
+												"requestMethod": "POST",
+												"writeBatchSize": 10000,
+												"httpCompressionType": "none",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "JsonWriteSettings"
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "Sage50_Datasource",
+												"type": "DatasetReference",
+												"parameters": {
+													"API_Call": {
+														"value": "@{item().Short_Table_Name}",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "Destination_Sage50_JSON_DataLake",
+												"type": "DatasetReference",
+												"parameters": {
+													"path": {
+														"value": "RAW/@{item().SourceName}/@{item().File_Name}",
+														"type": "Expression"
+													},
+													"file": {
+														"value": "@{item().File_Name}",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Retrieve Sage50 data from API",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "RestSource",
+												"httpRequestTimeout": "00:30:00",
+												"requestInterval": "00.00:00:00.010",
+												"requestMethod": "POST",
+												"requestBody": {
+													"value": "@if(equals(item().Short_Table_Name,'searchPopItem' ), \n'[\n  {\n    \"field\": \"QTY_ORDER\",\n    \"type\": \"gte\",\n    \"value\": \"0\"\n  }\n]'\n,\n'[\n  {\n    \"field\": \"RECORD_CREATE_DATE\",\n    \"type\": \"gte\",\n    \"value\": \"18/01/1979\"\n  }\n]'\n)",
+													"type": "Expression"
+												},
+												"additionalHeaders": {
+													"Content-Type": "application/json"
+												},
+												"paginationRules": {
+													"supportRFC5988": "true"
+												}
+											},
+											"sink": {
+												"type": "RestSink",
+												"httpRequestTimeout": "00:01:40",
+												"requestInterval": 10,
+												"requestMethod": "POST",
+												"writeBatchSize": 10000,
+												"httpCompressionType": "none",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "JsonWriteSettings"
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "Sage50_Datasource",
+												"type": "DatasetReference",
+												"parameters": {
+													"API_Call": {
+														"value": "@{item().Short_Table_Name}",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "Destination_Sage50_JSON_DataLake",
+												"type": "DatasetReference",
+												"parameters": {
+													"path": {
+														"value": "RAW/@{item().SourceName}/@{item().File_Name}",
+														"type": "Expression"
+													},
+													"file": {
+														"value": "@{item().File_Name}",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "GetTableNames",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderStoredProcedureName": "[dbo].[usp_List_Source_Tables_By_Source_Name_By_Page]",
+						"storedProcedureParameters": {
+							"SourceName": {
+								"type": "String",
+								"value": {
+									"value": "@{pipeline().parameters.SourceName}",
+									"type": "Expression"
+								}
+							},
+							"offsetSize": {
+								"type": "Int32",
+								"value": {
+									"value": "@{pipeline().parameters.PageSize}",
+									"type": "Expression"
+								}
+							},
+							"pageNo": {
+								"type": "Int32",
+								"value": {
+									"value": "@{pipeline().parameters.pageNo}",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DYWIDAG_LDW_DS",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "Sage50"
+			},
+			"PageSize": {
+				"type": "int",
+				"defaultValue": 5000
+			},
+			"pageNo": {
+				"type": "int",
+				"defaultValue": 1
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Sage50"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-22T10:38:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

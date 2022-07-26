@@ -1,0 +1,13 @@
+{
+	"name": "NavUK",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NavUK",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

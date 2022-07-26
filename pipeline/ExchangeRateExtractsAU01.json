@@ -1,0 +1,346 @@
+{
+	"name": "ExchangeRateExtractsAU01",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "AP-AU01"
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "DECLARE @CurrencyCode AS NVARCHAR(50)\nSELECT @CurrencyCode = dbo.[@{pipeline().parameters.sourceSchema}$General Ledger Setup].[LCY Code]\nFROM dbo.[@{pipeline().parameters.sourceSchema}$General Ledger Setup];\n\nSELECT\n\n\t@CurrencyCode AS From_Currency,\n\t[Currency Code],\n\t[Relational Exch_ Rate Amount] AS Currency_Conversion_Factor,\n\t[Starting Date] AS Valid_From,\n\tDATEADD(d, 1, EOMONTH(current_timestamp)) AS Valid_To\n\nFROM dbo.[@{pipeline().parameters.sourceSchema}$Currency Exchange Rate]\nWHERE ([Starting Date] > DATEADD(MONTH, -1, GETDATE()))\nORDER BY [Starting Date] DESC",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "From_Currency",
+									"type": "String"
+								},
+								"sink": {
+									"name": "From_Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Currency Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Currency_Conversion_Factor",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Currency_Conversion_Factor",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Valid_From",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Valid_From",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Valid_To",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Valid_To",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavAU",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ExchangeRateExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "ExchangeRateExtracts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "AP-AU01-ExchangeRateExtracts"
+			},
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "DYWIDAG Construction"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "Currency Exchange Rate"
+			}
+		},
+		"folder": {
+			"name": "AU"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-01-18T21:57:47Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

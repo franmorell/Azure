@@ -1,0 +1,17 @@
+{
+	"name": "G_LEntryAggregatedFIltered",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "G_LEntryAggregatedFIltered"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

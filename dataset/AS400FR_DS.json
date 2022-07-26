@@ -1,0 +1,16 @@
+{
+	"name": "AS400FR_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AS400FR",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "TAGZ/Source_Datasets"
+		},
+		"annotations": [],
+		"type": "Db2Table",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

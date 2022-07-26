@@ -1,0 +1,24 @@
+{
+	"name": "NavAU",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=True;Data Source=AU-NTL-SQL01;Initial Catalog=BC_LIVE",
+			"userName": "Dywidag\\AU-HighRadius_Nav",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "DYWIDAG_KeyVault_LinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "NavAU"
+			}
+		},
+		"connectVia": {
+			"referenceName": "NavAU",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

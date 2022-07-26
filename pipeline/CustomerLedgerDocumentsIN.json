@@ -1,0 +1,625 @@
+{
+	"name": "CustomerLedgerDocumentsIN",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "AP-IN01"
+							},
+							{
+								"name": "Company_ID",
+								"value": "AP-IN01"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": "IN",
+							"wildcardFileName": "HROpenItems_20210813.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Company_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Company_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_AMOUNT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OPEN_AMOUNT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Open_Amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "POSTING_DATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Posting Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DUE_DATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Due Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Local_Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PURCHASE_ORDER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Purchase_Order",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORDER_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Order_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_AMOUNT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Discount_Amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_DUE_DATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Discount_Due_Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CLEARING_DATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Clearing_Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_INDICATOR",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Retention_Indicator",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SHIP_TO_COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship_To_Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SalespersonCode",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SalespersonCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SALES_PERSON",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SalespersonName",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DSI_JOB_NO",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DSI_Job_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OPEN",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Open",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Retention_amount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Retention_Amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Dispute_Amount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Dispute_Amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobIN_CustomerLedgerDocuments",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "raw_CustomerLedgerDocuments",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerLedgerDocuments",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "raw to stg",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "raw to stg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "raw to stg",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[stg].[sp_rawToStg]",
+					"storedProcedureParameters": {
+						"tablename": {
+							"value": "CustomerLedgerDocuments",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "csv"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "Customer_Ledger_Documents_EU-IT01"
+			},
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "AP-IN01-CustomerLedgerDocuments"
+			}
+		},
+		"folder": {
+			"name": "IN"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-08-13T16:46:47Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

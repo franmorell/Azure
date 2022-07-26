@@ -1,0 +1,74 @@
+{
+	"name": "raw_CustomerContacts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Business_Unit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SET_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Primary_Contact_Flag",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Contact_First_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Contact_Last_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Role",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Phone_Number",
+				"type": "nvarchar"
+			},
+			{
+				"name": "EMail_Address",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Fax",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RunId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SystemId",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "raw_CustomerContacts"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

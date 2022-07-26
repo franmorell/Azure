@@ -1,0 +1,1075 @@
+{
+	"name": "CustLedgerEntryDE",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-DE01"
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "SELECT 'Navision' ERP, *\nFROM  dbo.[@{pipeline().parameters.sourceSchema}$Cust_ Ledger Entry] cle",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": {
+							"value": "DELETE FROM [stg].[CustLedgerEntry] WHERE [SystemId] = 'EU-DE01'",
+							"type": "Expression"
+						},
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "timestamp"
+								},
+								"sink": {
+									"name": "timestamp"
+								}
+							},
+							{
+								"source": {
+									"name": "Entry No_",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Entry No_",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Posting Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Posting Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Document Type",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Document Type",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Document No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Description",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Description",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Currency Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales (LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Sales (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Profit (LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Profit (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Inv_ Discount (LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Inv_ Discount (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Sell-to Customer No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Sell-to Customer No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer Posting Group",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer Posting Group",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Global Dimension 1 Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Global Dimension 1 Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Global Dimension 2 Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Global Dimension 2 Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Salesperson Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Salesperson Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "User ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "User ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Source Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Source Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "On Hold",
+									"type": "String"
+								},
+								"sink": {
+									"name": "On Hold",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Applies-to Doc_ Type",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Applies-to Doc_ Type",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Applies-to Doc_ No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Applies-to Doc_ No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Open",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Open",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Due Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Due Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Pmt_ Discount Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Pmt_ Discount Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Pmt_ Disc_ Possible",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Pmt_ Disc_ Possible",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Pmt_ Disc_ Given (LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Pmt_ Disc_ Given (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Positive",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Positive",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Closed by Entry No_",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Closed by Entry No_",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Closed at Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Closed at Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Closed by Amount",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Closed by Amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Applies-to ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Applies-to ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Journal Batch Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Journal Batch Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Reason Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Reason Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bal_ Account Type",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Bal_ Account Type",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Bal_ Account No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bal_ Account No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Transaction No_",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Transaction No_",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Closed by Amount (LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Closed by Amount (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Document Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Document Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "External Document No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "External Document No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Calculate Interest",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Calculate Interest",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Closing Interest Calculated",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Closing Interest Calculated",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "No_ Series",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_ Series",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Closed by Currency Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Closed by Currency Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Closed by Currency Amount",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Closed by Currency Amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Adjusted Currency Factor",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Adjusted Currency Factor",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Currency Factor",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Currency Factor",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Remaining Pmt_ Disc_ Possible",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Remaining Pmt_ Disc_ Possible",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Pmt_ Disc_ Tolerance Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Pmt_ Disc_ Tolerance Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Max_ Payment Tolerance",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Max_ Payment Tolerance",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Last Issued Reminder Level",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Last Issued Reminder Level",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Accepted Payment Tolerance",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Accepted Payment Tolerance",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Accepted Pmt_ Disc_ Tolerance",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Accepted Pmt_ Disc_ Tolerance",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Pmt_ Tolerance (LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Pmt_ Tolerance (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Amount to Apply",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Amount to Apply",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "IC Partner Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "IC Partner Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Applying Entry",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Applying Entry",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Reversed",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Reversed",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Reversed by Entry No_",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Reversed by Entry No_",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Reversed Entry No_",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Reversed Entry No_",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Prepayment",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Prepayment",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Reserves",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Reserves",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Commission paid out",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Commission paid out",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Planned Pmt_ Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Planned Pmt_ Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Advance Payment",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Advance Payment",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Holdback",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Holdback",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Debit Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Debit Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Date Pre-Notification",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Date Pre-Notification",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Mandate No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Mandate No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Due Date SEPA",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Due Date SEPA",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Mandate debit type",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Mandate debit type",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Pmt_ Import Entry No_",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Pmt_ Import Entry No_",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Pmt_ Discount %",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Pmt_ Discount %",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Orig_ Pmt_ Disc_Possible (LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Orig_ Pmt_ Disc_Possible (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Reopen-to ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Reopen-to ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Payback",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Payback",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Association No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Association No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Search Amount (LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Search Amount (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Payment Method Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Payment Method Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Payment Bank Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Payment Bank Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Mandate ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Mandate ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bullet repayment",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Bullet repayment",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavDEandCZ",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CustLedgerEntry",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-DE01-CustLedgerEntry"
+			},
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "DSI GmbH Live"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "Cust_ Ledger Entry"
+			}
+		},
+		"folder": {
+			"name": "DE"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-22T16:58:32Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

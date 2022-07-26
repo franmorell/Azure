@@ -1,0 +1,94 @@
+{
+	"name": "Test",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "DECLARE @CurrencyCode AS NVARCHAR(50)\nSELECT @CurrencyCode = [LCY Code]\nFROM dbo.[DSI GmbH Live$General Ledger Setup]\n\nDECLARE @CountryCode AS NVARCHAR(50)\nDECLARE @Company_ID AS NVARCHAR(50)\nSELECT\n\t@CountryCode = [Country_Region Code],\n\t@Company_ID = [Name]\nFROM dbo.[DSI GmbH Live$Company Information];\n\nWITH DetailedCustLedgerEntryCTE AS (\n\tSELECT\n\t\t[Cust_ Ledger Entry No_],\n\t\tSUM(Amount) AS Open_Amount,\n\t\tSUM(IIF(\n\t\t\t\t[Entry Type] IN (\n\t\t\t\t\t1 -- Initial Entry,\n\t\t\t\t\t--,2 -- Application\n\t\t\t\t\t,3 -- Unrealized Loss,\n\t\t\t\t\t,4 -- Unrealized Gain,\n\t\t\t\t\t,5 -- Realized Loss,\n\t\t\t\t\t,6 -- Realized Gain,\n\t\t\t\t\t,7 -- Payment Discount,\n\t\t\t\t\t,8 -- Payment Discount (VAT Excl.),\n\t\t\t\t\t,9 -- Payment Discount (VAT Adjustment),\n\t\t\t\t\t--,10 -- Appln. Rounding,\n\t\t\t\t\t--,11 -- Correction of Remaining Amount,\n\t\t\t\t\t,12 -- Payment Tolerance,\n\t\t\t\t\t,13 -- Payment Discount Tolerance,\n\t\t\t\t\t,14 -- Payment Tolerance (VAT Excl.),\n\t\t\t\t\t,15 -- Payment Tolerance (VAT Adjustment),\n\t\t\t\t\t,16 -- Payment Discount Tolerance (VAT Excl.),\n\t\t\t\t\t,17 -- Payment Discount Tolerance (VAT Adjustment)\n\t\t\t\t),\n\t\t\t\tAmount, 0\n\t\t\t)\n\t\t) AS Invoice_Amount\n\tFROM\n\t\tdbo.[DSI GmbH Live$Detailed Cust_ Ledg_ Entry]\n\tGROUP BY\n\t\t[Cust_ Ledger Entry No_]\n),\nRetentionAmountCTE AS (\n\tSELECT [Attached-to Cust_ Ledg_ Entry]\n\t\t,SUM(Amount) [Retention Amount]\n\t\t,MAX([Due Date]) AS [Retention Due Date]\n\t\t,MIN([Description Invoice]) AS [Description Invoice]\n\tFROM dbo.[DSI GmbH Live$DSI Holdback Customer]\n\tWHERE [Open] = 1\n\tAND [Holdback Code] IN ('GEWÄHR_5', 'SICH_10', 'DLZ')\n\tGROUP BY [Attached-to Cust_ Ledg_ Entry]\n),\nDisputeAmountCTE AS (\n\tSELECT [Attached-to Cust_ Ledg_ Entry]\n\t\t,SUM(Amount) [Dispute Amount]\n\tFROM dbo.[DSI GmbH Live$DSI Holdback Customer]\n\tWHERE [Open] = 1\n\tAND [Holdback Code] NOT IN ('GEWÄHR_5', 'SICH_10', 'DLZ')\n\tGROUP BY [Attached-to Cust_ Ledg_ Entry]\n),\nExclude2000sCTE AS (\n\tSELECT cle.[Entry No_]\n\tFROM\n\t\tdbo.[DSI GmbH Live$Cust_ Ledger Entry] cle\n\t\tLEFT JOIN dbo.[DSI GmbH Live$Customer] c ON cle.[Customer No_]=c.[No_]\n\tWHERE\n\t\tc.[No_] LIKE '2000%'\n\t\tAND cle.[Posting Date] = '20200101'\n)\nSELECT\n\t'Navision' as ERP,\nc.Recycling,\ne2CTE.[Entry No_],\n\t@Company_ID AS Company_ID,\n\tcle.[Customer No_] as Customer_No ,\n\tc.[Name] as [Name],\n\tdcle.Invoice_Amount as Document_Amount,\n\tdcle.Open_Amount,\n\tcle.[Entry No_] as CustomerLedgerEntryNumber,\n\tcle.[Document No_] as [Document No_],\n\tCASE cle.[Document Type]\n\t\twhen 0 THEN 'N/A'\n\t\tWHEN 1 THEN 'PAYMENT'\n\t\tWHEN 2 THEN 'INVOICE'\n\t\tWHEN 3 THEN 'CREDIT MEMO'\n\t\tWHEN 4 THEN 'FINANCE CHARGE MEMO'\n\t\tWHEN 5 THEN 'REMINDER'\n\t\tWHEN 6 THEN 'REFUND'\n\t\tELSE 'UNKNOWN'\n\tEND [Document_Type],\n\tcle.[Posting Date],\n\tCASE\n\tWHEN sih.[Payment Terms Code]<>'' THEN sih.[Payment Terms Code]\n\tWHEN c.[Payment Terms Code]<>'' THEN c.[Payment Terms Code]\n\tELSE null\n\tEND as [Payment Terms Code],\n\tcle.[Due Date],\n\tIIF(cle.[Currency Code] = '', @CurrencyCode, cle.[Currency Code]) as Currency_Code,\n\t@CurrencyCode as Local_Currency,\n\tNULL as Purchase_Order,\n\tsih.[Order No_] as Order_No,\n\tcle.[Pmt_ Disc_ Given (LCY)] as Discount_Amount,--Discount Amount ???\n\tIIF(cle.[Pmt_ Discount Date]='1753-01-01', NULL, cle.[Pmt_ Discount Date]) as Discount_Due_Date,\n\tIIF(cle.[Closed at Date]='1753-01-01', NULL, cle.[Closed at Date]) as Clearing_Date,\n\tCASE\n\t\tWHEN c.[Customer Posting Group] LIKE 'IC%' OR c.[Customer Posting Group] IN ('MERGER', 'BETR_STAET','BETEILIG') THEN 'INTERCOMPANY'\n\t\tWHEN ISNULL(j.[Business Unit],'') <> '' THEN j.[Business Unit]\n\t\tELSE dv.[Business Unit]\n\tEND as Business_Unit,\n\tIIF((ISNULL(raCTE.[Retention Amount], 0.0) > 0.0), 1, 0) as Retention_Indicator,\n\tIIF(sih.[Ship-to Country_Region Code]='', @CountryCode, sih.[Ship-to Country_Region Code]) as Ship_To_Country_Code,\n\tIIF(cle.[Salesperson Code]='', NULL, cle.[Salesperson Code]) as [SalespersonCode],\n\tsp.Name as [SalespersonName],\n\tIIF(cle.[Global Dimension 2 Code]='', NULL, cle.[Global Dimension 2 Code]) as DSI_Job_No,\n\tcle.[Open],\n\tISNULL(raCTE.[Retention Amount], 0.0) As [Retention_Amount],\n\tISNULL(daCTE.[Dispute Amount], 0.0) As [Dispute_Amount],\n\tj.[No_] as [Kopro Code],\n\tIIF(raCTE.[Description Invoice] IS NOT NULL, raCTE.[Description Invoice], cle.[Description]) AS [Description],\n\tIIF(cle.[Closed by Entry No_]=0, ccle.[Closing Entry No_], cle.[Closed by Entry No_]) AS [ClosedByCustomerLedgerEntryNumber],\n\traCTE.[Retention Due Date],\n\tIIF(cle.[User ID] = '', NULL, cle.[User ID]) AS User_ID,\n    cle.[Entry No_] AS [Application ID],\n    IIF(\n\t\tcle.[Closed by Entry No_] <> 0,\n\t\t(SELECT MIN([Document No_])\n\t\tFROM dbo.[DSI GmbH Live$Cust_ Ledger Entry] ApplyToCustLedg\n\t\tWHERE ApplyToCustLedg.[Entry No_] = cle.[Closed by Entry No_]),\n\t\t(SELECT MIN([Document No_])\n\t\tFROM dbo.[DSI GmbH Live$Cust_ Ledger Entry] ApplyToCustLedg\n\t\tWHERE ApplyToCustLedg.[Closed by Entry No_] = cle.[Entry No_])\n\t) AS Closed_By_Doc_Number,\n\tIIF(\n\t\tcle.[Closed by Entry No_] <> 0,\n\t\t(SELECT MIN([Entry No_])\n\t\tFROM dbo.[DSI GmbH Live$Cust_ Ledger Entry] ApplyToCustLedg\n\t\tWHERE ApplyToCustLedg.[Entry No_] = cle.[Closed by Entry No_]),\n\t\t(SELECT MIN([Entry No_])\n\t\tFROM dbo.[DSI GmbH Live$Cust_ Ledger Entry] ApplyToCustLedg\n\t\tWHERE ApplyToCustLedg.[Closed by Entry No_] = cle.[Entry No_])\n\t) AS Closed_By_Application_ID\nFROM\n\tdbo.[DSI GmbH Live$Cust_ Ledger Entry] cle\n\tLEFT JOIN dbo.[DSI GmbH Live$Customer] c ON cle.[Customer No_]=c.[No_]\n\tLEFT JOIN dbo.[DSI GmbH Live$Sales Invoice Header] sih ON cle.[Document No_] = sih.[No_]\n\tLEFT JOIN DetailedCustLedgerEntryCTE dcle ON cle.[Entry No_] = dcle.[Cust_ Ledger Entry No_]\n\tLEFT JOIN dbo.[DSI GmbH Live$DSI Job] j ON cle.[Global Dimension 2 Code] = j.No_\n\tLEFT JOIN dbo.[DSI GmbH Live$Salesperson_Purchaser] sp ON cle.[Salesperson Code] = sp.Code\n\tLEFT JOIN RetentionAmountCTE raCTE ON raCTE.[Attached-to Cust_ Ledg_ Entry] = cle.[Entry No_]\n\tLEFT JOIN DisputeAmountCTE daCTE ON daCTE.[Attached-to Cust_ Ledg_ Entry] = cle.[Entry No_]\n\tLEFT JOIN Exclude2000sCTE  e2CTE ON cle.[Entry No_] = e2CTE.[Entry No_]\n\tLEFT JOIN dbo.[DSI GmbH Live$Dimension Value] dv ON cle.[Global Dimension 2 Code] = dv.Code\n\tLEFT JOIN (select [Closed by Entry No_], MIN([Entry No_]) AS [Closing Entry No_] from dbo.[DSI GmbH Live$Cust_ Ledger Entry] group by [Closed by Entry No_]) ccle ON cle.[Entry No_] = ccle.[Closed by Entry No_]\nWHERE\n\t/*cle.[Document Type] != 1\n\tand*/\n\tcle.[Document No_] IN (\n'22-62783'\n,'22-62784'\n,'22-62785'\n,'22-62847'\n,'22-62848'\n,'22-62849'\n,'22-62974'\n,'22-62975'\n,'22-62976'\n,'22-62977'\n,'22-62978'\n)\nand c.[No_] != '99999' --do not extract documents for this customer\n\tand e2CTE.[Entry No_] IS NULL\n\tand c.Recycling != 1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "tbl",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "col",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "col",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavDEandCZ",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "testCols",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "DSI - Korea"
+			},
+			"sourceName": {
+				"type": "string",
+				"defaultValue": "AM-US01-CustomerLedgerDocuments"
+			}
+		},
+		"folder": {
+			"name": "_Test"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-04-25T21:25:52Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

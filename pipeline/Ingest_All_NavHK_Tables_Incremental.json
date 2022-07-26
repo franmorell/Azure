@@ -1,0 +1,187 @@
+{
+	"name": "Ingest_All_NavHK_Tables_Incremental",
+	"properties": {
+		"activities": [
+			{
+				"name": "Until Loop",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "SetPageCountVariable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greaterOrEquals(int(variables('Counter')),int(variables('PageCount')))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Set Temporary",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Temporary",
+								"value": {
+									"value": "@string(add(int(variables('Counter')),1))",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set Counter",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set Temporary",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Counter",
+								"value": {
+									"value": "@variables('Temporary')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Ingest x 5000 Tables",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Set Counter",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Ingest_NavHK_Tables_x_5000_Incremental",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": false,
+								"parameters": {
+									"pageNo": {
+										"value": "@variables('Counter')",
+										"type": "Expression"
+									},
+									"SourceName": {
+										"value": "@{pipeline().parameters.SourceName}",
+										"type": "Expression"
+									},
+									"PageSize": {
+										"value": "@{pipeline().parameters.PageSize}",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					],
+					"timeout": "7.00:00:00"
+				}
+			},
+			{
+				"name": "SetPageCountVariable",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "GetTablePageCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "PageCount",
+					"value": {
+						"value": "@string(activity('GetTablePageCount').output.firstRow.Page_Count)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "GetTablePageCount",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderStoredProcedureName": "[dbo].[usp_Count_Source_Table_Pages]",
+						"storedProcedureParameters": {
+							"SourceName": {
+								"type": "String",
+								"value": {
+									"value": "@{pipeline().parameters.SourceName}",
+									"type": "Expression"
+								}
+							},
+							"TablesPerPage": {
+								"type": "Int16",
+								"value": {
+									"value": "@{pipeline().parameters.PageSize}",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DYWIDAG_LDW_DS",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "NavHK"
+			},
+			"PageSize": {
+				"type": "int",
+				"defaultValue": 1300
+			}
+		},
+		"variables": {
+			"Counter": {
+				"type": "String",
+				"defaultValue": "0"
+			},
+			"Temporary": {
+				"type": "String"
+			},
+			"PageCount": {
+				"type": "String",
+				"defaultValue": "0"
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Incremental Ingestion"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-02-02T09:29:38Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

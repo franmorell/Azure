@@ -1,0 +1,176 @@
+{
+	"name": "hrc_CustomerMaster",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "hrc"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "COMPANY_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "COUNTRY_CODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "COUNTRY",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MAIL_ADDRESS1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MAIL_ADDRESS2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MAIL_CITY",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MAIL_STATE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MAIL_POSTAL_CODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MAIL_COUNTRY",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VAT_REGISTRATION_NO",
+				"type": "varchar"
+			},
+			{
+				"name": "TERMS_DESC",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SALESREP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CREDIT_STATUS",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DATE_ACCT_OPENED",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CREDIT_LIMIT_LCY",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "CREDIT_LIMIT_USED",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "BALANCE",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "HIGHEST_CREDIT_LIMIT_USED",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "LAST_PAYMENT_RECEIVED_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "LAST_PAYMENT_RECEIVED_AMOUNT",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "LANGUAGE_CODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BANK_COMMUNICATION",
+				"type": "varchar"
+			},
+			{
+				"name": "CURRENCY_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "NEXT_REVIEW_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CREDIT_ANALYST",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CREDIT_EXPOSURE",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "BUSINESS_UNIT",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GEOGRAPHICAL_LOCATION",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DEPARTMENT_CODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BLOCKED",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FACTORING",
+				"type": "tinyint",
+				"precision": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "hrc",
+			"table": "CustomerMaster"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,11 @@
+{
+	"name": "DYWIDAG_LDW_Linked_Service",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDW",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=bi-soln-ws-ondemand.sql.azuresynapse.net;Initial Catalog=DYWIDAG_LDW"
+		}
+	}
+}

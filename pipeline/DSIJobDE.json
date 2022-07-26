@@ -1,0 +1,1454 @@
+{
+	"name": "DSIJobDE",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-DE01"
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "SELECT 'Navision' ERP, *\nFROM  dbo.[@{pipeline().parameters.sourceSchema}$DSI Job] Job",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": {
+							"value": "DELETE FROM [stg].[DSIJob] WHERE [SystemId] = 'EU-DE01'",
+							"type": "Expression"
+						},
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "timestamp"
+								},
+								"sink": {
+									"name": "timestamp"
+								}
+							},
+							{
+								"source": {
+									"name": "No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Search Description",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Search Description",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Description",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Description",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Description 2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Description 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to Customer No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to Customer No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Creation Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Creation Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Starting Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Starting Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Ending Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Ending Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Completion Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Completion Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Status",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Status",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Person Responsible",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Person Responsible",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Global Dimension 1 Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Global Dimension 1 Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Global Dimension 2 Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Global Dimension 2 Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Blocked",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Blocked",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Last Date Modified",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Last Date Modified",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer Disc_ Group",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer Disc_ Group",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer Price Group",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer Price Group",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Picture",
+									"type": "Byte[]"
+								},
+								"sink": {
+									"name": "Picture",
+									"type": "Byte[]"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to Address",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to Address 2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to Address 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to City",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to City",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to Post Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to Post Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "No_ Series",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_ Series",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to Country_Region Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to Country_Region Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to Contact No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to Contact No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bill-to Contact",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bill-to Contact",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TBG",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TBG",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Branch",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Branch",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Responsibility Center",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Responsibility Center",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Quote Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Quote Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Revenue",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Revenue",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Actual Revenue",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Actual Revenue",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Actual Cost",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Actual Cost",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "No_ 2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_ 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NAB",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "NAB",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Balance NAB Last Year",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Balance NAB Last Year",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Order Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Order Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Calculated % of Completion",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Calculated % of Completion",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Estimated % of Completion",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Estimated % of Completion",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Description 3",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Description 3",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Revenue recognized",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Revenue recognized",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 1",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 1",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 2",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 2",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 3",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 3",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 4",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 4",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 5",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 5",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 6",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 6",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 7",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 7",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 8",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 8",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 9",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 9",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost 10",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost 10",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost Total",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost Total",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost Other 21",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost Other 21",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost Other 22",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost Other 22",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost Other 23",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost Other 23",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost Other 24",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost Other 24",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Cost Total Other",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Original Cost Total Other",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales Order No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Sales Order No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales Quote No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Sales Quote No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Site Manager",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Site Manager",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Site Manager Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Site Manager Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Site Manager Phone No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Site Manager Phone No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Site Manager Mobile Phone No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Site Manager Mobile Phone No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Site Manager Substitute",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Site Manager Substitute",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Foreman",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Foreman",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Foreman Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Foreman Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Foreman Phone No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Foreman Phone No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Foreman Mobile Phone No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Foreman Mobile Phone No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Foreman 2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Foreman 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Foreman 2 Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Foreman 2 Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Foreman 2 Phone No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Foreman 2 Phone No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Foreman 2 Mobile Phone No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Foreman 2 Mobile Phone No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Directions to Del_ Address",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Directions to Del_ Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Building Site",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Building Site",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Workflow Status",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Workflow Status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Workflow Status Description",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Workflow Status Description",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Insurance Total",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Insurance Total",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Contract Type",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Contract Type",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Estimated Result %",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Estimated Result %",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Portion %",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Portion %",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Invoice Type",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Invoice Type",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Discount %",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Discount %",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "BF",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "BF",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "WF",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "WF",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to Name 2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to Name 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to Address",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to Address 2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to Address 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to City",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to City",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to Contact",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to Contact",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to Post Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to Post Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to County",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to County",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship-to Country_Region Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship-to Country_Region Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Project Type",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Project Type",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Planned Segments",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Planned Segments",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Invoice Printing",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Invoice Printing",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Commercial Contact",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Commercial Contact",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Commercial Contact Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Commercial Contact Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Commercial Contact Phone No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Commercial Contact Phone No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Commercial Contact Mobile No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Commercial Contact Mobile No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Asst_ Commercial Contact",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Asst_ Commercial Contact",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Asst_ Commercial Contact Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Asst_ Commercial Contact Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Asst_ Comm_ Contact Phone No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Asst_ Comm_ Contact Phone No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Asst_ Comm_ Contact Mobile No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Asst_ Comm_ Contact Mobile No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Long Term Serv_ Agrmt_ Y_N",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Long Term Serv_ Agrmt_ Y_N",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Material Cost Risk",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Material Cost Risk",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Postponement Risk",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Postponement Risk",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Percent Complete",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Percent Complete",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Currency Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "POC",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "POC",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Avoid Automated Budget Update",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Avoid Automated Budget Update",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "JPR Status",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "JPR Status",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Transfer Status",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Transfer Status",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Business Unit",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavDEandCZ",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DSIJob",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-DE01-DSIJob"
+			},
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "DSI GmbH Live"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "DSI Job"
+			}
+		},
+		"folder": {
+			"name": "DE"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-08-30T15:16:12Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

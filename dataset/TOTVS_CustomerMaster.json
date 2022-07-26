@@ -1,0 +1,16 @@
+{
+	"name": "TOTVS_CustomerMaster",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "TOTVS_BR_PROD",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "/rest/api/DSIWS001/v1/customermaster"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

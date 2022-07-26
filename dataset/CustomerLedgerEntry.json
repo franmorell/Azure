@@ -1,0 +1,436 @@
+{
+	"name": "CustomerLedgerEntry",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "varchar"
+			},
+			{
+				"name": "timestamp",
+				"type": "timestamp"
+			},
+			{
+				"name": "Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Customer No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Posting Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Document Type",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Document No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Description",
+				"type": "varchar"
+			},
+			{
+				"name": "Currency Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Sales (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Profit (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Inv_ Discount (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Sell-to Customer No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Customer Posting Group",
+				"type": "varchar"
+			},
+			{
+				"name": "Global Dimension 1 Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Global Dimension 2 Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Salesperson Code",
+				"type": "varchar"
+			},
+			{
+				"name": "User ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Source Code",
+				"type": "varchar"
+			},
+			{
+				"name": "On Hold",
+				"type": "varchar"
+			},
+			{
+				"name": "Applies-to Doc_ Type",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Applies-to Doc_ No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Open",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Due Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Pmt_ Discount Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Original Pmt_ Disc_ Possible",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Pmt_ Disc_ Given (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Positive",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Closed by Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Closed at Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Closed by Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Applies-to ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Journal Batch Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Reason Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Bal_ Account Type",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Bal_ Account No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Transaction No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Closed by Amount (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Document Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "External Document No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Calculate Interest",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Closing Interest Calculated",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "No_ Series",
+				"type": "varchar"
+			},
+			{
+				"name": "Closed by Currency Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Closed by Currency Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Adjusted Currency Factor",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Original Currency Factor",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Remaining Pmt_ Disc_ Possible",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Pmt_ Disc_ Tolerance Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Max_ Payment Tolerance",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Last Issued Reminder Level",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Accepted Payment Tolerance",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Accepted Pmt_ Disc_ Tolerance",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Pmt_ Tolerance (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Amount to Apply",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "IC Partner Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Applying Entry",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Reversed",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Reversed by Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Reversed Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Prepayment",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Reserves",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Commission paid out",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Planned Pmt_ Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Advance Payment",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Holdback",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Debit Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Date Pre-Notification",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Mandate No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Due Date SEPA",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Mandate debit type",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Pmt_ Import Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Original Pmt_ Discount %",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Orig_ Pmt_ Disc_Possible (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Reopen-to ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Payback",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Association No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Search Amount (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Payment Method Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Payment Bank Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Mandate ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Bullet repayment",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "RunId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SystemId",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "CustLedgerEntry"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

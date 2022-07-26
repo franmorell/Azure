@@ -1,0 +1,168 @@
+{
+	"name": "BlobIT_CustomerExtracts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Blob IT"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "IT",
+				"container": "highradius"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "No_",
+				"type": "String"
+			},
+			{
+				"name": "Company_Name",
+				"type": "String"
+			},
+			{
+				"name": "Country_Code",
+				"type": "String"
+			},
+			{
+				"name": "Country_Name",
+				"type": "String"
+			},
+			{
+				"name": "Name",
+				"type": "String"
+			},
+			{
+				"name": "Address",
+				"type": "String"
+			},
+			{
+				"name": "Address 2",
+				"type": "String"
+			},
+			{
+				"name": "Post Code",
+				"type": "String"
+			},
+			{
+				"name": "City",
+				"type": "String"
+			},
+			{
+				"name": "Cust_Country_Code",
+				"type": "String"
+			},
+			{
+				"name": "Payment Terms Code",
+				"type": "String"
+			},
+			{
+				"name": "Salesperson Code",
+				"type": "String"
+			},
+			{
+				"name": "Blocked",
+				"type": "String"
+			},
+			{
+				"name": "date_acct_opened",
+				"type": "String"
+			},
+			{
+				"name": "Credit Limit (LCY)",
+				"type": "String"
+			},
+			{
+				"name": "credit_limit_used",
+				"type": "String"
+			},
+			{
+				"name": "Balance",
+				"type": "String"
+			},
+			{
+				"name": "highest_credit_limit_used",
+				"type": "String"
+			},
+			{
+				"name": "last_payment_received_date",
+				"type": "String"
+			},
+			{
+				"name": "last_payment_received_amount",
+				"type": "String"
+			},
+			{
+				"name": "Language_Code",
+				"type": "String"
+			},
+			{
+				"name": "Bank_Communication",
+				"type": "String"
+			},
+			{
+				"name": "Currency_Code",
+				"type": "String"
+			},
+			{
+				"name": "Next_Review_Date",
+				"type": "String"
+			},
+			{
+				"name": "Credit_Analyst",
+				"type": "String"
+			},
+			{
+				"name": "Credit_Exposure",
+				"type": "String"
+			},
+			{
+				"name": "Business_Unit",
+				"type": "String"
+			},
+			{
+				"name": "Geographical_Location",
+				"type": "String"
+			},
+			{
+				"name": "Department_Code",
+				"type": "String"
+			},
+			{
+				"name": "credit_status",
+				"type": "String"
+			},
+			{
+				"name": "Factoring",
+				"type": "String"
+			},
+			{
+				"name": "VAT Registration No_",
+				"type": "String"
+			},
+			{
+				"name": "Salesperson Name",
+				"type": "String"
+			},
+			{
+				"name": "State",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

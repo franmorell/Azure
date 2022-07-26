@@ -1,0 +1,157 @@
+{
+	"name": "BlobIN_CustomerExtracts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "IN",
+				"container": "highradius"
+			},
+			"columnDelimiter": "?",
+			"escapeChar": "\"",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "String"
+			},
+			{
+				"name": "COMPANY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "COUNTRY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "COUNTRY",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_NAME",
+				"type": "String"
+			},
+			{
+				"name": "MAIL_ADDRESS1",
+				"type": "String"
+			},
+			{
+				"name": "MAIL_ADDRESS2",
+				"type": "String"
+			},
+			{
+				"name": "MAIL_CITY",
+				"type": "String"
+			},
+			{
+				"name": "MAIL_STATE",
+				"type": "String"
+			},
+			{
+				"name": "MAIL_POSTAL_CODE",
+				"type": "String"
+			},
+			{
+				"name": "MAIL_COUNTRY",
+				"type": "String"
+			},
+			{
+				"name": "TERMS_DESC",
+				"type": "String"
+			},
+			{
+				"name": "SALESREP",
+				"type": "String"
+			},
+			{
+				"name": "CREDIT_STATUS",
+				"type": "String"
+			},
+			{
+				"name": "DATE_ACCT_OPENED",
+				"type": "String"
+			},
+			{
+				"name": "CREDIT_LIMIT_LCY",
+				"type": "String"
+			},
+			{
+				"name": "CREDIT_LIMIT_USED",
+				"type": "String"
+			},
+			{
+				"name": "BALANCE",
+				"type": "String"
+			},
+			{
+				"name": "HIGHEST_CREDIT_LIMIT_USED",
+				"type": "String"
+			},
+			{
+				"name": "LAST_PAYMENT_RECEIVED_DATE",
+				"type": "String"
+			},
+			{
+				"name": "LAST_PAYMENT_RECEIVED_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "LANGUAGE_CODE",
+				"type": "String"
+			},
+			{
+				"name": "BANK_COMMUNICATION",
+				"type": "String"
+			},
+			{
+				"name": "CURRENCY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "NEXT_REVIEW_DATE",
+				"type": "String"
+			},
+			{
+				"name": "CREDIT_ANALYST",
+				"type": "String"
+			},
+			{
+				"name": "CREDIT_EXPOSURE",
+				"type": "String"
+			},
+			{
+				"name": "BUSINESS_UNIT",
+				"type": "String"
+			},
+			{
+				"name": "GEOGRAPHICAL_LOCATION",
+				"type": "String"
+			},
+			{
+				"name": "DEPARTMENT_CODE",
+				"type": "String"
+			},
+			{
+				"name": "BLOCKED",
+				"type": "String"
+			},
+			{
+				"name": "FACTORING",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

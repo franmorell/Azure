@@ -1,0 +1,16 @@
+{
+	"name": "NavUSandCA_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NavUSandCA",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "TAGZ/Source_Datasets"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

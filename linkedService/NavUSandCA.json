@@ -1,0 +1,17 @@
+{
+	"name": "NavUSandCA",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=DSI-NAV;initial catalog=NAV-LIVE",
+			"userName": "dywidag-na\\SQLQuery",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJlZTE0OGE1Ny0wYzY5LTQ3ZTItOTM5MS1iZDg1YWNlYWNlMDMiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "NavUSandCA",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

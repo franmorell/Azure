@@ -1,0 +1,30 @@
+{
+	"name": "HRPaymentHistory_PROD",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HighRadiusSFTP_PROD",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "HighRadius_PROD"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": {
+					"value": "@concat('HRPaymentHistory_',formatDateTime(pipeline().TriggerTime,'yyyyMMdd'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": "/inbound/prod/paymentHistoryExtract"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

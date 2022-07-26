@@ -1,0 +1,20 @@
+{
+	"name": "Sage50_API",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Linked service to the Sage50 API provided by Hyperext",
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "http://194.73.85.41:50027",
+			"enableServerCertificateValidation": false,
+			"authenticationType": "Anonymous",
+			"authHeaders": {
+				"AuthToken": {
+					"type": "SecureString",
+					"value": "**********"
+				}
+			}
+		}
+	}
+}

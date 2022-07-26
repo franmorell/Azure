@@ -1,0 +1,595 @@
+{
+	"name": "PaymentHistoryExtractsIT",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-IT01"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"wildcardFolderPath": "IT",
+							"wildcardFileName": "Payments_EU-IT01*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Company_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Company_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Creation Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Creation Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_DATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Business_Unit",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Region",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Region",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Transaction_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transaction_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Document_Type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Transaction_Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transaction_Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Transaction_Currency",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transaction_Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "REPORTING_TX_AMOUNT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "REPORTING_TX_AMOUNT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TX_AMOUNT_APPLIED",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TX_AMOUNT_APPLIED",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "INVOICE_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "INVOICE_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORIG_TX_AMOUNT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ORIG_TX_AMOUNT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PAYMENT_METHOD",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PAYMENT_METHOD",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COUNTRY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Open",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Open",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobIT_PaymentHistoryExtracts",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "raw_PaymentsHistoryExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "PaymentHistoryExtracts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "raw to stg",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "raw to stg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "raw to stg",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[stg].[sp_rawToStg]",
+					"storedProcedureParameters": {
+						"tablename": {
+							"value": "PaymentHistoryExtracts",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ArchiveFiles",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "uspCopyData",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"wildcardFolderPath": "IT",
+							"wildcardFileName": "Payments_EU-IT01*",
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobIT_ArchiveSource_PaymentHistoryExtracts",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "BlobIT_Archive_PaymentHistoryExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-IT01-PaymentHistoryExtracts"
+			},
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "csv"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "Payment_History_Extracts_EU-IT01"
+			}
+		},
+		"folder": {
+			"name": "IT"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-04-04T20:26:22Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

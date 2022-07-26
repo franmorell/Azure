@@ -1,0 +1,346 @@
+{
+	"name": "HighRadiusCustomerInfoMasterPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "HighRadiusCustomerInfoAU",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoAU",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoBE",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoBE",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoCA",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoCA",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoCZ",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoCZ",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoDE",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoDE",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoES",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoES",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoHK01",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoHK01",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoHK02",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoHK02",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoHK03",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoHK03",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoKR",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoKR",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoNL01",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoNL01",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoNL02",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoNL02",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoPL",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoPL",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoUS",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoUS",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoIT",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoIT",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadius Import",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusImport",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "HighRadiusCustomerInfoUK",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "HighRadius Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "HighRadiusCustomerInfoUK",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "HighRadiusOutbound"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-04-07T09:41:52Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

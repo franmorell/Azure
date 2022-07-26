@@ -1,0 +1,19 @@
+{
+	"name": "DYWIDAG_DWH",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=dywidag-dwh.database.windows.net;Initial Catalog=DYWIDAG_DWH;User ID=DywidagDWHSys",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "DYWIDAG_KeyVault_LinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "DywidagDWHSys"
+			}
+		}
+	}
+}

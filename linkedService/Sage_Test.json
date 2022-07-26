@@ -1,0 +1,19 @@
+{
+	"name": "Sage_Test",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "http://194.73.85.41:40027",
+			"enableServerCertificateValidation": false,
+			"authenticationType": "Anonymous",
+			"authHeaders": {
+				"AuthToken": {
+					"type": "SecureString",
+					"value": "**********"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,54 @@
+{
+	"name": "pbi_fac_uom_conversions",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "PBI"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "system_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_material",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_uom",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_rate",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "dim_input_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dim_update_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "material_uom_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "uom_hashkey",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "fac_uom_conversions"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

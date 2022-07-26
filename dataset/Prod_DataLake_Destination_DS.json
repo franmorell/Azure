@@ -1,0 +1,26 @@
+{
+	"name": "Prod_DataLake_Destination_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DataLake_LinkedSVC",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "TAGZ/Destination_Datasets"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "prodfs"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "~",
+			"firstRowAsHeader": true,
+			"quoteChar": "~"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

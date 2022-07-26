@@ -1,0 +1,37 @@
+{
+	"name": "SiiGo_CreditLimits_Excel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Datos",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "CUPOS DE CREDITO  Ene-03-2021.xlsx",
+				"folderPath": "test",
+				"container": "siigo"
+			},
+			"range": "A3:C1048576",
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "CUSTOMER ID",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER NAME",
+				"type": "String"
+			},
+			{
+				"name": "CREDIT LIMIT",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

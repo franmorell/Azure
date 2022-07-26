@@ -1,0 +1,7 @@
+{
+	"name": "NavHK",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "NavHK"
+	}
+}

@@ -1,0 +1,78 @@
+{
+	"name": "siigo_customerContacts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Business_Unit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Company_Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SET_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PRIMARY_CONTACT_FLAG",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CONTACT_FIRST_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CONTACT_LAST_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ROLE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHONE_NUMBER",
+				"type": "nvarchar"
+			},
+			{
+				"name": "EMAIL_ADDRESS",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FAX",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RunId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SystemId",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "siigo_customerContacts"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

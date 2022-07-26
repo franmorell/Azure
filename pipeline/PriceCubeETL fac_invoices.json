@@ -1,0 +1,205 @@
+{
+	"name": "PriceCubeETL fac_invoices",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "/* fac_invoices */\nselect --top 100\n    LEFT('EU-PL06_' + [Data Dostawy Dzień] + '_' + TRIM([Dokument Dostawy Numer]) +'_'+  TRIM([Produkt Kod]) +'_'+  TRIM([Ilość]), 300) key_invoice_id,\n    CAST([Data Dostawy Dzień] as DATE) key_date,\n    LEFT(TRIM([Dokument Dostawy Numer]),100) key_doc_no,\n    'Invoice' key_doc_type,\n    CAST('EU-PL06' AS NVARCHAR) system_id,\n    CAST( [Wartość Netto] AS FLOAT) amt_net_currency,\n    CAST('PLN' AS NVARCHAR) key_currency,\t\n    LEFT(TRIM([Produkt Kod]),100) key_material,\n    CAST ('GAJKOW' AS NVARCHAR) key_plant,\n    LEFT(TRIM([Dostawca Kod]),100) key_supplier,\n\tLEFT(TRIM([Produkt Jednostka Miary]),100) key_uom,\n    CAST([Ilość] AS FLOAT) num_quantity\t\nfrom [pbi].[PriceCubeInput_Partec]",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "key_invoice_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "key_invoice_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "system_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "system_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "key_doc_type",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "key_doc_type",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "key_doc_no",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "key_doc_no",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "key_date",
+									"type": "DateTime",
+									"physicalType": "date"
+								},
+								"sink": {
+									"name": "key_date",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "key_supplier",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "key_supplier",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "key_material",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "key_material",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "key_plant",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "key_plant",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "num_quantity",
+									"type": "Double",
+									"physicalType": "float"
+								},
+								"sink": {
+									"name": "num_quantity",
+									"type": "Double",
+									"physicalType": "float"
+								}
+							},
+							{
+								"source": {
+									"name": "key_uom",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "key_uom",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "key_currency",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "key_currency",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "amt_net_currency",
+									"type": "Double",
+									"physicalType": "float"
+								},
+								"sink": {
+									"name": "amt_net_currency",
+									"type": "Double",
+									"physicalType": "float"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "pbi_PriceCubeInput_Partec",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "pbi_fac_invoices",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "PBI/PriceCube"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-30T13:37:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

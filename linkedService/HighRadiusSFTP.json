@@ -1,0 +1,16 @@
+{
+	"name": "HighRadiusSFTP",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "Sftp",
+		"typeProperties": {
+			"host": "sftp-turtle5.highradius.com",
+			"port": 22,
+			"skipHostKeyValidation": true,
+			"authenticationType": "SshPublicKey",
+			"userName": "dywidag",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRZV0lEQUdCSURBVEFGQUNUT1JZXzkyMGVmYzIzLTlkNzYtNGU3Ni05NmIwLWUyNzc5Y2JhODM4MiINCn0="
+		}
+	}
+}

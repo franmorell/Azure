@@ -1,0 +1,77 @@
+{
+	"name": "Sage50_Test",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:10:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "POST",
+						"requestBody": {
+							"value": "[\n  {\n    \"field\": \"RECORD_CREATE_DATE\",\n    \"type\": \"gte\",\n    \"value\": \"18/01/2021\"\n  }\n]",
+							"type": "Expression"
+						},
+						"additionalHeaders": {
+							"Content-Type": "application/json"
+						},
+						"paginationRules": {
+							"supportRFC5988": "true"
+						}
+					},
+					"sink": {
+						"type": "RestSink",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": 10,
+						"requestMethod": "POST",
+						"writeBatchSize": 10000,
+						"httpCompressionType": "none"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Sage50_Datasource",
+						"type": "DatasetReference",
+						"parameters": {
+							"API_Call": "searchSalesOrder"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Sage50_Datasource",
+						"type": "DatasetReference",
+						"parameters": {
+							"API_Call": "x"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "Sage50"
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Sage50"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-22T10:38:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

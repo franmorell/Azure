@@ -1,0 +1,50 @@
+{
+	"name": "Optima_Ingestion_Monthly",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Sage50_Ingestion",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "Sage50",
+					"PageSize": 5000,
+					"pageNo": 1
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "Ingest_Optima_A_Type",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"Frequency": "M",
+					"SourceName": "ComarchPL"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Month",
+				"interval": 1,
+				"startTime": "2022-02-06T16:03:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						21
+					],
+					"monthDays": [
+						22
+					]
+				}
+			}
+		}
+	}
+}

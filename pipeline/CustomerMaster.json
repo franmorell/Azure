@@ -1,0 +1,573 @@
+{
+	"name": "CustomerMaster",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "DECLARE @LastLoadDate DATETIME\nSELECT @LastLoadDate = MAX(EndDateTime)\nFROM load.Run\nWHERE SourceName = '@{pipeline().parameters.SourceName}'\nAND [Status] = 'Success';\n\nSELECT\n    ds.SYSTEM_NAME as ERP,\n    hc.CUSTOMER_NUMBER AS CUSTOMER_ID,\n    hc.SYSTEM_ID AS COMPANY_CODE,\n    hcc.COUNTRY_CODE,\n    dc.COUNTRY_NAME as COUNTRY,\n    scm.CUSTOMER_NAME,\n    scm.ADDRESS AS MAIL_ADDRESS1,\n    scm.ADDRESS_2 AS MAIL_ADDRESS2,\n    scm.CITY AS MAIL_CITY,\n    scm.[STATE] AS MAIL_STATE,\n    scm.POSTAL_CODE AS MAIL_POSTAL_CODE,\n    cdc.COUNTRY_NAME AS MAIL_COUNTRY,\n    scm.VAT_REGISTRATION_NO,\n    hpt.PAYMENT_TERMS_CODE AS TERMS_DESC,\n    SSP.SALES_PERSON_NAME AS SALESREP,\n    scci.CREDIT_STATUS,\n    scci.DATE_ACCT_OPENED,\n    scci.CREDIT_LIMIT_LCY,\n    scci.CREDIT_LIMIT_USED,\n    scci.BALANCE,\n    scci.HIGHEST_CREDIT_LIMIT_USED,\n    scci.LAST_PAYMENT_RECEIVED_DATE,\n    scci.LAST_PAYMENT_RECEIVED_AMOUNT,\n    IIF(scm.LANGUAGE_CODE IS NULL OR scm.LANGUAGE_CODE = '', 'EN', scm.LANGUAGE_CODE) AS LANGUAGE_CODE,\n    scci.BANK_COMMUNICATION,\n    scci.CURRENCY_CODE,\n    scci.NEXT_REVIEW_DATE,\n    scci.CREDIT_ANALYST,\n    scci.CREDIT_EXPOSURE,\n    scm.BUSINESS_UNIT,\n    scm.GEOGRAPHICAL_LOCATION,\n    scm.DEPARTMENT_CODE,\n    scci.BLOCKED,\n    scci.FACTORING_INDICATOR AS FACTORING,\n    scm.STATUS\nFROM\n    dv.H_CUSTOMER hc WITH(NOLOCK)\n    LEFT JOIN dv.DICT_SYSTEM ds WITH(NOLOCK) ON hc.SYSTEM_ID = ds.SYSTEM_ID\n    JOIN dv.tfnL_CUSTOMER_COUNTRY_BY_DATE(GETDATE()) lcc ON hc.CUSTOMER_HASH_KEY = lcc.CUSTOMER_HASH_KEY\n    JOIN dv.H_COUNTRY hcc  WITH(NOLOCK) ON lcc.COUNTRY_HASH_KEY = hcc.COUNTRY_HASH_KEY\n    LEFT JOIN dv.DICT_COUNTRY dc WITH(NOLOCK) ON hcc.COUNTRY_CODE = dc.COUNTRY_CODE\n    JOIN dv.tfnS_CUSTOMER_MASTER_BY_DATE(GETDATE()) scm ON hc.CUSTOMER_HASH_KEY = scm.CUSTOMER_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_PAYMENT_TERMS_BY_DATE(GETDATE()) lcpt ON hc.CUSTOMER_HASH_KEY = lcpt.CUSTOMER_HASH_KEY\n    JOIN dv.H_PAYMENT_TERMS hpt WITH(NOLOCK) ON lcpt.PAYMENT_TERMS_HASH_KEY = hpt.PAYMENT_TERMS_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_SALES_PERSON_BY_DATE(GETDATE()) lcsp ON hc.CUSTOMER_HASH_KEY = lcsp.CUSTOMER_HASH_KEY\n    LEFT JOIN DV.tfnS_SALES_PERSON_BY_DATE(GETDATE()) ssp ON lcsp.SALES_PERSON_HASH_KEY = SSP.SALES_PERSON_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_CREDIT_INFO_BY_DATE(GETDATE()) scci ON hc.CUSTOMER_HASH_KEY = scci.CUSTOMER_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_DELETION_BY_DATE(GETDATE()) scd ON hc.CUSTOMER_HASH_KEY = scd.CUSTOMER_HASH_KEY\n    LEFT JOIN dv.DICT_COUNTRY cdc WITH(NOLOCK) ON scm.CUSTOMER_COUNTRY_CODE = cdc.COUNTRY_CODE\nWHERE 1=1\n    AND scd.IS_DELETED = 'NO'\n    AND hc.SYSTEM_ID IN (\n        'EU-PL01','EU-CZ01','EU-UK01',\n        'EU-ES01','EU-NL01','EU-NL02',\n        'EU-BE01','AP-AU01')\n    /*AND (hc.LOAD_DTS > @LastLoadDate \n        OR lcc.LOAD_DTS > @LastLoadDate \n        OR hcc.LOAD_DTS > @LastLoadDate \n        OR scm.LOAD_DTS > @LastLoadDate \n        OR lcpt.LOAD_DTS > @LastLoadDate \n        OR hpt.LOAD_DTS > @LastLoadDate \n        OR lcsp.LOAD_DTS > @LastLoadDate \n        OR ssp.LOAD_DTS > @LastLoadDate \n        OR scci.LOAD_DTS > @LastLoadDate\n    )*/\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "SftpWriteSettings",
+							"operationTimeout": "01:00:00",
+							"useTempFileRename": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COUNTRY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COUNTRY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_ADDRESS1",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_ADDRESS1",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_ADDRESS2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_ADDRESS2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_CITY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_CITY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_STATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_STATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_POSTAL_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_POSTAL_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_COUNTRY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_COUNTRY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "VAT_REGISTRATION_NO",
+									"type": "String"
+								},
+								"sink": {
+									"name": "VAT_REGISTRATION_NO",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SALESREP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SALESREP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_STATUS",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CREDIT_STATUS",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DATE_ACCT_OPENED",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DATE_ACCT_OPENED",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_LIMIT_LCY",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "CREDIT_LIMIT_LCY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_LIMIT_USED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "CREDIT_LIMIT_USED",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BALANCE",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "BALANCE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "HIGHEST_CREDIT_LIMIT_USED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "HIGHEST_CREDIT_LIMIT_USED",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "LAST_PAYMENT_RECEIVED_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "LAST_PAYMENT_RECEIVED_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "LAST_PAYMENT_RECEIVED_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "LAST_PAYMENT_RECEIVED_AMOUNT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "LANGUAGE_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "LANGUAGE_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BANK_COMMUNICATION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BANK_COMMUNICATION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NEXT_REVIEW_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "NEXT_REVIEW_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_ANALYST",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CREDIT_ANALYST",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_EXPOSURE",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "CREDIT_EXPOSURE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "GEOGRAPHICAL_LOCATION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "GEOGRAPHICAL_LOCATION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DEPARTMENT_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DEPARTMENT_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BLOCKED",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BLOCKED",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FACTORING",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "FACTORING",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "STATUS",
+									"type": "String"
+								},
+								"sink": {
+									"name": "STATUS",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DYWIDAG_DWH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "HRCustomerMaster",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "DYWIDAG_DWH-HRCustomerMaster_TEST"
+			}
+		},
+		"folder": {
+			"name": "HighRadius_TEST"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-04-26T20:37:50Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

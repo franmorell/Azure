@@ -1,0 +1,16 @@
+{
+	"name": "DYWIDAG_LDW_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_LDW_Linked_Service",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "TAGZ/Source_Datasets"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

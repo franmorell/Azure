@@ -1,0 +1,23 @@
+{
+	"name": "Invoices_PDF_BLOB_IT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Invoices PDF IT"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "*",
+				"folderPath": "IT_PDF",
+				"container": "highradius"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

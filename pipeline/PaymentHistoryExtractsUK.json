@@ -1,0 +1,496 @@
+{
+	"name": "PaymentHistoryExtractsUK",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-UK01"
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "DECLARE @CurrencyCode AS NVARCHAR(50)\nSELECT @CurrencyCode = [LCY Code]\nFROM dbo.[@{pipeline().parameters.sourceSchema}$General Ledger Setup];\n\nDECLARE @CountryCode AS NVARCHAR(50)\nDECLARE @Company_ID AS NVARCHAR(50)\nSELECT \n    @CountryCode = [Country_Region Code],\n    @Company_ID = [Name]\nFROM dbo.[@{pipeline().parameters.sourceSchema}$Company Information];\n\n\nWITH DetailedCustLedgerEntryCTE AS (\n    SELECT\n        [Cust_ Ledger Entry No_],\n        SUM([Amount]) AS Open_Amount,\n        SUM(IIF(\n                [Entry Type] IN (\n                    1 -- Initial Entry,\n                    --,2 -- Application\n                    ,3 -- Unrealized Loss,\n                    ,4 -- Unrealized Gain,\n                    ,5 -- Realized Loss,\n                    ,6 -- Realized Gain,\n                    ,7 -- Payment Discount,\n                    ,8 -- Payment Discount (VAT Excl.),\n                    ,9 -- Payment Discount (VAT Adjustment),\n                    --,10 -- Appln. Rounding,\n                    --,11 -- Correction of Remaining Amount,\n                    ,12 -- Payment Tolerance,\n                    ,13 -- Payment Discount Tolerance,\n                    ,14 -- Payment Tolerance (VAT Excl.),\n                    ,15 -- Payment Tolerance (VAT Adjustment),\n                    ,16 -- Payment Discount Tolerance (VAT Excl.),\n                    ,17 -- Payment Discount Tolerance (VAT Adjustment)\n                ),\n                Amount, 0\n            )\n        ) AS Invoice_Amount\n    FROM\n        dbo.[@{pipeline().parameters.sourceSchema}$Detailed Cust_ Ledg_ Entry]\n    GROUP BY\n        [Cust_ Ledger Entry No_]\n),\nDetailedCustLedgerEntryByDocumentCTE AS (\n    SELECT\n        [Document No_],\n        MIN([Posting Date]) as Document_Date,\n        SUM(IIF(\n                [Entry Type] IN (\n                    1 -- Initial Entry,\n                    --,2 -- Application\n                    ,3 -- Unrealized Loss,\n                    ,4 -- Unrealized Gain,\n                    ,5 -- Realized Loss,\n                    ,6 -- Realized Gain,\n                    ,7 -- Payment Discount,\n                    ,8 -- Payment Discount (VAT Excl.),\n                    ,9 -- Payment Discount (VAT Adjustment),\n                    --,10 -- Appln. Rounding,\n                    --,11 -- Correction of Remaining Amount,\n                    ,12 -- Payment Tolerance,\n                    ,13 -- Payment Discount Tolerance,\n                    ,14 -- Payment Tolerance (VAT Excl.),\n                    ,15 -- Payment Tolerance (VAT Adjustment),\n                    ,16 -- Payment Discount Tolerance (VAT Excl.),\n                    ,17 -- Payment Discount Tolerance (VAT Adjustment)\n                ),\n                Amount, 0\n            )\n        ) AS Invoice_Amount\n    FROM\n        dbo.[@{pipeline().parameters.sourceSchema}$Detailed Cust_ Ledg_ Entry]\n    GROUP BY\n        [Document No_]\n),\nReceivedPayments as (\n    select distinct [Document No_]\n    from dbo.[@{pipeline().parameters.sourceSchema}$Bank Account Ledger Entry]\n)\nSELECT\n    'Navision' as ERP,\n    @Company_ID AS Company_ID,\n    cle.[Entry No_] as CustomerLedgerEntryNumber,\n    cle.[Document Date] as [Creation Date],\n    cle.[Customer No_] as Customer_No ,\n    c.[Name] as [Name],\n    -- CASE\n    --             WHEN sih.[Responsibility Center] = 'GT-HEADER' THEN 'GT'\n    --             WHEN sih.[Responsibility Center] = 'CA-HEADER' THEN 'DY.CO'\n    --         END as Business_Unit,\n    CASE\n        WHEN c.[Customer Posting Group] = 'DSI' THEN 'INTERCOMPANY'\n        WHEN LEFT(cle.[Global Dimension 2 Code], 2) = 'CA' THEN 'DY.CO'\n        WHEN cle.[Global Dimension 2 Code] IS NOT NULL AND cle.[Global Dimension 2 Code] != '' THEN 'GT'\n    END as Business_Unit,\n    null as Region,\n    cle.[Transaction No_] as Transaction_ID,\n    CASE cle.[Document Type]\n        when 0 THEN 'N/A'\n        WHEN 1 THEN 'PAYMENT'\n        WHEN 2 THEN 'INVOICE'\n        WHEN 3 THEN 'CREDIT MEMO'\n        WHEN 4 THEN 'FINANCE CHARGE MEMO'\n        WHEN 5 THEN 'REMINDER'\n        WHEN 6 THEN 'REFUND'\n        ELSE 'UNKNOWN'\n    END [Document_Type],\n    cle.[Posting Date] as Transaction_Date,\n    IIF(cle.[Currency Code] = '', @CurrencyCode, cle.[Currency Code]) as Transaction_Currency,\n    NULL as REPORTING_TX_AMOUNT,\n    dcle.Invoice_Amount TX_AMOUNT_APPLIED,\n    IIF(cle.[Applies-to Doc_ No_]='', NULL, cle.[Applies-to Doc_ No_]) as INVOICE_NUMBER,\n    dclebd.Document_Date as DOCUMENT_DATE,\n    dclebd.Invoice_Amount as ORIG_TX_AMOUNT,\n    IIF(ISNULL(c.[Payment Method Code],'') = '', 'WIRE', c.[Payment Method Code]) as PAYMENT_METHOD,\n    null as COUNTRY,\n    cle.[Open]\nFROM\n    dbo.[@{pipeline().parameters.sourceSchema}$Cust_ Ledger Entry] cle\n    LEFT JOIN dbo.[@{pipeline().parameters.sourceSchema}$Customer] c ON cle.[Customer No_]=c.[No_]\n    LEFT JOIN dbo.[@{pipeline().parameters.sourceSchema}$Sales Invoice Header] sih ON cle.[Document No_] = sih.[No_]\n    LEFT JOIN DetailedCustLedgerEntryCTE dcle ON cle.[Entry No_] = dcle.[Cust_ Ledger Entry No_]\n    LEFT JOIN DetailedCustLedgerEntryByDocumentCTE dclebd ON IIF(cle.[Applies-to Doc_ No_]='', NULL, cle.[Applies-to Doc_ No_]) = dclebd.[Document No_]\n    LEFT JOIN ReceivedPayments rec ON cle.[Document No_] = rec.[Document No_]\nWHERE\n    CASE cle.[Document Type]\n        when 0 THEN 'N/A'\n        WHEN 1 THEN 'PAYMENT'\n        WHEN 2 THEN 'INVOICE'\n        WHEN 3 THEN 'CREDIT MEMO'\n        WHEN 4 THEN 'FINANCE CHARGE MEMO'\n        WHEN 5 THEN 'REMINDER'\n        WHEN 6 THEN 'REFUND'\n        ELSE 'UNKNOWN'\n    END = 'PAYMENT'\n    OR rec.[Document No_] IS NOT NULL",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Company_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Company_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Creation Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Creation Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DOCUMENT_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Business_Unit",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Region",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Region",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Transaction_ID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Transaction_ID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Document_Type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Transaction_Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Transaction_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Transaction_Currency",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transaction_Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "REPORTING_TX_AMOUNT",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "REPORTING_TX_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "TX_AMOUNT_APPLIED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "TX_AMOUNT_APPLIED",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "INVOICE_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "INVOICE_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORIG_TX_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "ORIG_TX_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "PAYMENT_METHOD",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PAYMENT_METHOD",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "COUNTRY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Open",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "Open",
+									"type": "Int16"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavUK",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "PaymentHistoryExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "PaymentHistoryExtracts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-UK01-PaymentHistoryExtracts"
+			},
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "Dywidag Systems"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "BankLedgerEntry"
+			}
+		},
+		"folder": {
+			"name": "UK"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-03-16T14:59:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

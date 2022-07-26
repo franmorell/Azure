@@ -1,0 +1,25 @@
+{
+	"name": "PriceCubeInput_Partec_BLOB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "PBI"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "7.21 Produkty z dostaw_2020_202",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Partec_PL06_input to price cube ADJUSTED.xlsx",
+				"container": "pbi"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,216 @@
+{
+	"name": "pbi_fac_invoices",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "PBI"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "key_invoice_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "system_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_doc_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_booking_circle",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_doc_no",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_doc_year",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dsc_invoice",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_date",
+				"type": "date"
+			},
+			{
+				"name": "key_booking_date",
+				"type": "date"
+			},
+			{
+				"name": "key_document_date",
+				"type": "date"
+			},
+			{
+				"name": "key_doc_item",
+				"type": "nvarchar"
+			},
+			{
+				"name": "txt_doc_item",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_purch_doc_no",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_purch_doc_item",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_supplier",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_material",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_plant",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_account",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_quantity",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "key_uom",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_currency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "key_currency_doc",
+				"type": "nvarchar"
+			},
+			{
+				"name": "amt_net_currency",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "amt_net_currency_doc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "key_payment_date",
+				"type": "date"
+			},
+			{
+				"name": "key_payment_term",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_days_1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_percent_1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_days_2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_percent_2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_days_3",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_percent_3",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_days_4",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_percent_4",
+				"type": "nvarchar"
+			},
+			{
+				"name": "num_payment_days_5",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dim_input_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dim_update_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "material_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "uom_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "supplier_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "account_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "material_supplier_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "material_unknown_supplier_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "account_supplier_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "account_unknown_supplier_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "material_uom_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "payment_terms_hashkey",
+				"type": "varchar"
+			},
+			{
+				"name": "fxrate_hashkey",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "fac_invoices"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

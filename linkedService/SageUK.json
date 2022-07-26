@@ -1,0 +1,28 @@
+{
+	"name": "SageUK",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "Odbc",
+		"typeProperties": {
+			"connectionString": {
+				"type": "SecureString",
+				"value": "**********"
+			},
+			"authenticationType": "Basic",
+			"userName": "UK-HighRadius_Sage",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "DYWIDAG_KeyVault_LinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "UK-Sage"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SageUK",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

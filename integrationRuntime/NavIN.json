@@ -1,0 +1,7 @@
+{
+	"name": "NavIN",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "NavIN"
+	}
+}

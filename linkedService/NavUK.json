@@ -1,0 +1,25 @@
+{
+	"name": "NavUK",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "NavUK",
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=True;Data Source=WIN-PFGCFQ293F4;Initial Catalog=DSI_V100R08_LIVE",
+			"userName": "dsi\\UK-HighRadius_Nav",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "DYWIDAG_KeyVault_LinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "NAVUK"
+			}
+		},
+		"connectVia": {
+			"referenceName": "NavUK",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "NavDETest",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=rz-navsql01;initial catalog=NAV18TST",
+			"userName": "DSI\\DE-HighRadius_Nav",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI3MDU3N2M3Mi04MDU3LTQyNjctOTFjMC1jMDBkMzE1MWRiY2YiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "NavDE",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

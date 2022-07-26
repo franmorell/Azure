@@ -1,0 +1,53 @@
+{
+	"name": "BlobIN_BalancingExtracts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "IN",
+				"container": "highradius"
+			},
+			"columnDelimiter": "?",
+			"escapeChar": "\"",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "String"
+			},
+			{
+				"name": "COMPANY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "DOCTYPE",
+				"type": "String"
+			},
+			{
+				"name": "TOTAL_LOCAL_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "TOTAL_DOC_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "TOTAL_OPEN_ITEMS",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

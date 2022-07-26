@@ -1,0 +1,16 @@
+{
+	"name": "DatumUK",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SageUK",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "OdbcTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": "'INVOICE'"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

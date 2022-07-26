@@ -1,0 +1,38 @@
+{
+	"name": "Destination_Sage50_JSON_DataLake",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DataLake_LinkedSVC",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"path": {
+				"type": "string"
+			},
+			"file": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Destination_Datasets"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@{dataset().file}.json",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@{dataset().path}",
+					"type": "Expression"
+				},
+				"fileSystem": "prodfs"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,108 @@
+{
+	"name": "BlobIT_PaymentHistoryExtracts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Blob IT"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "IT",
+				"container": "highradius"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "Company_ID",
+				"type": "String"
+			},
+			{
+				"name": "CustomerLedgerEntryNumber",
+				"type": "String"
+			},
+			{
+				"name": "Creation Date",
+				"type": "String"
+			},
+			{
+				"name": "Customer_No",
+				"type": "String"
+			},
+			{
+				"name": "Name",
+				"type": "String"
+			},
+			{
+				"name": "Business_Unit",
+				"type": "String"
+			},
+			{
+				"name": "Region",
+				"type": "String"
+			},
+			{
+				"name": "Transaction_ID",
+				"type": "String"
+			},
+			{
+				"name": "Document_Type",
+				"type": "String"
+			},
+			{
+				"name": "Transaction_Date",
+				"type": "String"
+			},
+			{
+				"name": "Transaction_Currency",
+				"type": "String"
+			},
+			{
+				"name": "REPORTING_TX_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "TX_AMOUNT_APPLIED",
+				"type": "String"
+			},
+			{
+				"name": "INVOICE_NUMBER",
+				"type": "String"
+			},
+			{
+				"name": "DOCUMENT_DATE",
+				"type": "String"
+			},
+			{
+				"name": "ORIG_TX_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "PAYMENT_METHOD",
+				"type": "String"
+			},
+			{
+				"name": "COUNTRY",
+				"type": "String"
+			},
+			{
+				"name": "Open",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

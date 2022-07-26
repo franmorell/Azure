@@ -1,0 +1,16 @@
+{
+	"name": "TOTVS_CreditUpdate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "TOTVS_BR_PROD",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "rest/api/DSIWS006/v1/creditupdate/list"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

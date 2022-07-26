@@ -1,0 +1,110 @@
+{
+	"name": "PaymentHistoryExtracts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "stg"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Entry No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Posting Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Document Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Customer_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "customer_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Business_Unit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Region",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Transaction_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Document_Type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Transaction_Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Transaction_Currency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Reporting_TX_Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "TX_Amount_Applied",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Invoice_Number",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Orig_TX_Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Payment_Method",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RunId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SystemId",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "PaymentHistoryExtracts"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

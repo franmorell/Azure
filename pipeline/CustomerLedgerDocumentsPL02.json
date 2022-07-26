@@ -1,0 +1,545 @@
+{
+	"name": "CustomerLedgerDocumentsPL02",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-PL02"
+							}
+						],
+						"sqlReaderQuery": "select\n\t\n\t'ERP' = 'OPT',\n\t'company_id/code' = 'PARTEC SYSTEM Sp. z o.o.',\n\t'Customer_id' = pv.pod_kod ,\n\t'customer_name' = pv.pod_nazwa1,\n\t'total_amount/invoice_Amount' = a.bzd_kwota * a.BZd_Kierunek,\n\t'open_amt' =(a.bzd_kwota-a.BZd_KwotaRoz)*a.BZd_Kierunek,\n\t'Application ID' =TrN_TrNID,--miejsce na unikalne ID wpisu w systemie, możemy pobrać jakiś uniklany identyfikator dokumentu? \n\t--[CDNP] zrobione, aczkolwiek będzie unikalne w ramach dokumentów magazynowych i faktur zakupu i sprzedaży\n\t'document_no' = a.bzd_numer,\n\t--'Document_type' = DDf_Symbol + '_' + DDf_Nazwa,\n\t'Document_type' = case when TrN_Korekta =0 then 'INVOICE' when TrN_Korekta in (1,2,3) then 'CREDIT MEMO' else '' END,\n\t'Posting_Date/Invoice date' =a.BZd_DataDok ,\n\t'terms_desc/Payment terms' = FPl_Nazwa,\n\t'net_due_Date/Due date' = a.BZd_Termin,\n\t'currency' = case when a.bzd_walutaDok = '' then 'PLN' ELSE a.bzd_walutaDok end,\n\t'local currency' = 'PLN',\n\t'settelmentDate' = max(a.BZd_DataRoz),\n\t'company_code_currency/Local Currency' = case when a.bzd_walutaDok = '' then 'PLN' ELSE a.bzd_walutaDok end,\n\t'po_no' = NULL,\n\t'order_No' = NULL,\n\t'Discount Amount' = NULL,\n\t'Discount Due Date' = CAST(NULL AS DATE),\n\t'Clearing Date/Accounting date/deposit date' =max(a.BZd_DataRoz),\n\t'Business Unit' = 'DY.CO', --[AG] - może być na sztywno 'DY.CO'\n\t--[CDNP] OK\n\t'Retention indicator' = NULL,\n\t'Ship_to_Country_Code' = TrN_OdbKraj, -- [AG] w tym polu powinien być dwuliterowy kod kraju PL, DE, itp.\n\t--[CDNP] \n\t'Salesperson' = TrN_OpeZalNazwisko,\n\t'Salesperson Name' = TrN_OpeZalNazwisko,\n\t'DSI Job No' = NULL,\n\t'Open' = 1\nfrom \n\tcdn.bnkzdarzenia a\n\tjoin cdn.podmiotyview pv on a.bzd_podmiottyp=pv.pod_podmiottyp and a.bzd_podmiotid=pv.pod_podid\n\tjoin cdn.FormyPlatnosci on a.BZd_FPlId = FPl_FPlId\n\tleft outer join cdn.TraNag on TrN_TrNID = a.BZd_DokumentID and a.BZd_DokumentTyp in (1,101)\n\tleft outer join cdn.DokDefinicje on a.BZd_DDfID = DDf_DDfID\nwhere \n\ta.bzd_dokumenttyp in (1,101) \n\tand TrN_TypDokumentu = 302\n\tand a.bzd_kwota-a.BZd_KwotaRoz<>0\n\tand pv.Pod_PodmiotTyp =1\ngroup by \n\tPod_Kod, pv.Pod_Nazwa1, a.BZd_Kwota,TrN_TrNID, \n\ta.BZd_Numer, DDf_Symbol, DDf_Nazwa, \n\ta.BZd_DataDok, FPl_Nazwa, \n\ta.BZd_Termin, a.BZd_WalutaDok, TrN_OdbKraj,\n\tTrN_OpeZalNazwisko,BZd_KwotaRoz, TrN_Korekta,\n\ta.BZd_Kierunek\nUNION ALL\nselect\n\t'ERP' = 'OPT',\n\t'company_id/code' = 'PARTEC SYSTEM Sp. z o.o.',\n\t'Customer_id' = pv.pod_kod ,\n\t'customer_name' = pv.pod_nazwa1,\n\t'total_amount/invoice_Amount' = a.bzd_kwota * a.BZd_Kierunek,\n\t'open_amt' =(a.bzd_kwota-a.BZd_KwotaRoz)*a.BZd_Kierunek,\n\t'Application ID' =TrN_TrNID,--miejsce na unikalne ID wpisu w systemie, możemy pobrać jakiś uniklany identyfikator dokumentu? \n\t--[CDNP] zrobione, aczkolwiek będzie unikalne w ramach dokumentów magazynowych i faktur zakupu i sprzedaży\n\t'document_no' = a.bzd_numer,\n\t--'Document_type' = DDf_Symbol + '_' + DDf_Nazwa,\n\t'Document_type' = case when TrN_Korekta =0 then 'INVOICE' when TrN_Korekta in (1,2,3) then 'CREDIT MEMO' else '' END,\n\t'Posting_Date/Invoice date' =a.BZd_DataDok ,\n\t'terms_desc/Payment terms' = FPl_Nazwa,\n\t'net_due_Date/Due date' = a.BZd_Termin,\n\t'currency' = case when a.bzd_walutaDok = '' then 'PLN' ELSE a.bzd_walutaDok end,\n\t'local currency' = 'PLN',\n\t'settelmentDate' = max(a.BZd_DataRoz),\n\t'company_code_currency/Local Currency' = case when a.bzd_walutaDok = '' then 'PLN' ELSE a.bzd_walutaDok end,\n\t'po_no' = NULL,\n\t'order_No' = NULL,\n\t'Discount Amount' = NULL,\n\t'Discount Due Date' = CAST(NULL AS DATE),\n\t'Clearing Date/Accounting date/deposit date' =max(a.BZd_DataRoz),\n\t'Business Unit' = 'DY.CO', --[AG] - może być na sztywno 'DY.CO'\n\t--[CDNP] OK\n\t'Retention indicator' = NULL,\n\t'Ship_to_Country_Code' = TrN_OdbKraj, -- [AG] w tym polu powinien być dwuliterowy kod kraju PL, DE, itp.\n\t--[CDNP] \n\t'Salesperson' = TrN_OpeZalNazwisko,\n\t'Salesperson Name' = TrN_OpeZalNazwisko,\n\t'DSI Job No' = NULL,\n\t'Open' = 0\nfrom \n\tcdn.bnkzdarzenia a\n\tjoin cdn.podmiotyview pv on a.bzd_podmiottyp=pv.pod_podmiottyp and a.bzd_podmiotid=pv.pod_podid\n\tjoin cdn.FormyPlatnosci on a.BZd_FPlId = FPl_FPlId\n\tleft outer join cdn.TraNag on TrN_TrNID = a.BZd_DokumentID and a.BZd_DokumentTyp in (1,101)\n\tleft outer join cdn.DokDefinicje on a.BZd_DDfID = DDf_DDfID\nwhere \n\ta.bzd_dokumenttyp in (1,101) \n\tand TrN_TypDokumentu = 302\n\tand a.bzd_kwota-a.BZd_KwotaRoz=0\n\tand pv.Pod_PodmiotTyp =1\ngroup by \n\tPod_Kod, pv.Pod_Nazwa1, a.BZd_Kwota,TrN_TrNID, \n\ta.BZd_Numer, DDf_Symbol, DDf_Nazwa, \n\ta.BZd_DataDok, FPl_Nazwa, \n\ta.BZd_Termin, a.BZd_WalutaDok, TrN_OdbKraj,\n\tTrN_OpeZalNazwisko,BZd_KwotaRoz, TrN_Korekta,\n\ta.BZd_Kierunek",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "company_id/code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Company_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_id",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "customer_name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "total_amount/invoice_Amount",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Document_Amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "open_amt",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Open_Amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "document_no",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Application ID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Document_type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Posting_Date/Invoice date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Posting Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "terms_desc/Payment terms",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "net_due_Date/Due date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Due Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "currency",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "local currency",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Local_Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "po_no",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Purchase_Order",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "order_No",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Order_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Discount Amount",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Discount_Amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Discount Due Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Discount_Due_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Clearing Date/Accounting date/deposit date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Clearing_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Business Unit",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Retention indicator",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Retention_Indicator",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship_to_Country_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship_To_Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Salesperson",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SalespersonCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Salesperson Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SalespersonName",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DSI Job No",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "DSI_Job_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Open",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Open",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ComarchPL",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CustomerLedgerDocuments",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerLedgerDocuments",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-PL02-CustomerLedgerDocuments"
+			}
+		},
+		"folder": {
+			"name": "PL Comarch"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-10T21:17:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

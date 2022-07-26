@@ -1,0 +1,521 @@
+{
+	"name": "API03 - CustomerLedgerDocumentsBR_open",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "AM-BR01"
+							}
+						],
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"AbsoluteUrl": "$.NextRequest"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['terms_desc']"
+								},
+								"sink": {
+									"name": "terms_desc",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['customer_id']"
+								},
+								"sink": {
+									"name": "customer_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['document_type']"
+								},
+								"sink": {
+									"name": "document_type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['deposit_date']"
+								},
+								"sink": {
+									"name": "deposit_date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['currency_code']"
+								},
+								"sink": {
+									"name": "currency_code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['sales_person']"
+								},
+								"sink": {
+									"name": "sales_person",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['document_no']"
+								},
+								"sink": {
+									"name": "document_no",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['erp']"
+								},
+								"sink": {
+									"name": "erp",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['po_no']"
+								},
+								"sink": {
+									"name": "po_no",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['customerledgerentrynumber']"
+								},
+								"sink": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['invoice_date']"
+								},
+								"sink": {
+									"name": "invoice_date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['due_date']"
+								},
+								"sink": {
+									"name": "due_date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['open_amt']"
+								},
+								"sink": {
+									"name": "open_amt",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "['business_unit']"
+								},
+								"sink": {
+									"name": "business_unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['order_no']"
+								},
+								"sink": {
+									"name": "order_no",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['payment_terms']"
+								},
+								"sink": {
+									"name": "payment_terms",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['company_id']"
+								},
+								"sink": {
+									"name": "company_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['total_amount']"
+								},
+								"sink": {
+									"name": "total_amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "['application_id']"
+								},
+								"sink": {
+									"name": "application_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['ship_to_country']"
+								},
+								"sink": {
+									"name": "ship_to_country",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Local_Currency']"
+								},
+								"sink": {
+									"name": "Local_Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Customer_No']"
+								},
+								"sink": {
+									"name": "Customer_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['RunId']"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['SystemId']"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "$['items']"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TOTVS_OpenAR",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "raw_OpenAR_BR",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "RESTAPI",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "RESTAPI",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "RESTAPI",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "raw to stg",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[stg].[sp_rawToStg]",
+					"storedProcedureParameters": {
+						"tablename": {
+							"value": "raw_OpenAR_BR",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "raw to stg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerLedgerDocuments",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "AM-BR01-CustomerLedgerDocumentsOpen"
+			}
+		},
+		"folder": {
+			"name": "BR"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-17T19:01:53Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

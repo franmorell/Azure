@@ -1,0 +1,303 @@
+{
+	"name": "G_LEntryAggregatedFilteredDE",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-DE01"
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "SELECT\n    'Navision' AS ERP,\n    le.[Posting Date],\n    CASE\n        WHEN [Cost Category Code] = 1 THEN 'Material incl. Steel'\n        WHEN [Cost Category Code] = 2 THEN 'Steel (not relevant)'\n        WHEN [Cost Category Code] = 3 THEN 'Labour cost'\n        WHEN [Cost Category Code] = 4 THEN 'Supervision'\n        WHEN [Cost Category Code] = 5 THEN 'Purchased services'\n        WHEN [Cost Category Code] = 6 THEN 'Equipment rentals'\n        WHEN [Cost Category Code] = 7 THEN 'Freights'\n        WHEN [Cost Category Code] = 8 THEN 'T&E'\n        WHEN [Cost Category Code] = 9 THEN 'R&D Project support'\n        WHEN [Cost Category Code] = 10 THEN 'Other miscellaneous'\n        WHEN [Cost Category Code] = 21 THEN 'Other miscellaneous' --new\n        WHEN [Cost Category Code] = 22 THEN 'Other miscellaneous' --new\n        WHEN [Cost Category Code] = 23 THEN 'Other miscellaneous' --new\n        WHEN [Cost Category Code] = 24 THEN 'Other miscellaneous' --new\n        WHEN [Cost Category Code] = 27 THEN 'Other miscellaneous' --new\n        ELSE 'Unknown'\n    END AS [Cost Category],\n    SUM(Amount) AS [Amount(LCY)],\n    IIF(SUBSTRING( le.[Global Dimension 2 Code],2,2) <> '99', le.[Global Dimension 2 Code], NULL) as [ProjectId]\nFROM\n    dbo.[@{pipeline().parameters.sourceSchema}$G_L Entry] le\n    INNER JOIN  [dbo].[@{pipeline().parameters.sourceSchema}$DSI Job] j ON le.[Global Dimension 2 Code] = j.[No_]\nWHERE\n    le.[Cost Category Code] IN ('1','2','3','4','5','6','7','8','9','10', '21' ,'22' , '23' , '24' , '27')\nGROUP BY\n    [Posting Date],\n    CASE\n        WHEN [Cost Category Code] = 1 THEN 'Material incl. Steel'\n        WHEN [Cost Category Code] = 2 THEN 'Steel (not relevant)'\n        WHEN [Cost Category Code] = 3 THEN 'Labour cost'\n        WHEN [Cost Category Code] = 4 THEN 'Supervision'\n        WHEN [Cost Category Code] = 5 THEN 'Purchased services'\n        WHEN [Cost Category Code] = 6 THEN 'Equipment rentals'\n        WHEN [Cost Category Code] = 7 THEN 'Freights'\n        WHEN [Cost Category Code] = 8 THEN 'T&E'\n        WHEN [Cost Category Code] = 9 THEN 'R&D Project support'\n        WHEN [Cost Category Code] = 10 THEN 'Other miscellaneous'\n        WHEN [Cost Category Code] = 21 THEN 'Other miscellaneous' --new\n        WHEN [Cost Category Code] = 22 THEN 'Other miscellaneous' --new\n        WHEN [Cost Category Code] = 23 THEN 'Other miscellaneous' --new\n        WHEN [Cost Category Code] = 24 THEN 'Other miscellaneous' --new\n        WHEN [Cost Category Code] = 27 THEN 'Other miscellaneous' --new\n\n\n        ELSE 'Unknown'\n    END,\n    IIF(SUBSTRING( le.[Global Dimension 2 Code],2,2) <> '99', le.[Global Dimension 2 Code], NULL)\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "DELETE FROM [stg].[G_LEntryAggregatedFIltered] WHERE [SystemId] = 'EU-DE01'",
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Posting Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Posting Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Cost Category",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Cost Category",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Amount(LCY)",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Amount(LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "ProjectId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ProjectId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavDEandCZ",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "G_LEntryAggregatedFIltered",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-DE01-G_LEntry"
+			},
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "DSI GmbH Live"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "G_L Entry"
+			}
+		},
+		"folder": {
+			"name": "DE"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-08-30T15:15:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

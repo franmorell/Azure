@@ -1,0 +1,113 @@
+{
+	"name": "hrc_PaymentHistory",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "hrc"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "COMPANY_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "APPLICATION_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CREATION_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BUSINESS_UNIT",
+				"type": "nvarchar"
+			},
+			{
+				"name": "REGION",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TRANSACTION_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DOCUMENT_TYPE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TRANSACTION_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "TRANSACTION_CURRENCY_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "REPORTING_TX_AMOUNT",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "TX_AMOUNT_APPLIED",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "INVOICE_NUMBER",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DOCUMENT_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ORIGINAL_TX_AMOUNT",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "PAYMENT_METHOD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "COUNTRY_CODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ORIGINAL_DOCUMENT_APPLICATION_ID",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "hrc",
+			"table": "PaymentHistory"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

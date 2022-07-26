@@ -1,0 +1,73 @@
+{
+	"name": "hrc_CustomerContacts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "hrc"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BUSINESS_UNIT",
+				"type": "nvarchar"
+			},
+			{
+				"name": "COMPANY_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SET_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PRIMARY_CONTACT_FLAG",
+				"type": "varchar"
+			},
+			{
+				"name": "CONTACT_FIRST_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CONTACT_LAST_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ROLE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHONE_NUMBER",
+				"type": "varchar"
+			},
+			{
+				"name": "EMAIL_ADDRESS",
+				"type": "varchar"
+			},
+			{
+				"name": "FAX",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "hrc",
+			"table": "CustomerContacts"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

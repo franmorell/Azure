@@ -1,0 +1,178 @@
+{
+	"name": "stgComarchCustomerMaster",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Pod_PodmiotTyp",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "Pod_PodId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ERP",
+				"type": "text"
+			},
+			{
+				"name": "customer_id/number",
+				"type": "text"
+			},
+			{
+				"name": "company_id/code",
+				"type": "text"
+			},
+			{
+				"name": "Country_code",
+				"type": "text"
+			},
+			{
+				"name": "Country",
+				"type": "text"
+			},
+			{
+				"name": "customer_name",
+				"type": "text"
+			},
+			{
+				"name": "mail_address1",
+				"type": "text"
+			},
+			{
+				"name": "mail_address2",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "mail_city",
+				"type": "text"
+			},
+			{
+				"name": "mail_state",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "mail_postal_code",
+				"type": "text"
+			},
+			{
+				"name": "mail_country",
+				"type": "text"
+			},
+			{
+				"name": "terms_desc",
+				"type": "text"
+			},
+			{
+				"name": "salesrep",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "credit_status",
+				"type": "text"
+			},
+			{
+				"name": "date_acct_opened",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "credit_limit",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "credit_limit_used",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "highest_credit_limit_used",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "last_payment_received_date",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "last_Payment_received_amount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "language_code",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Bank Communication",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Currency",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Next Review Date",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Credit Analyst Or Collector ",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Credit Exposure",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Business Unit",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Geographical Location",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Department Code",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Blocked",
+				"type": "text"
+			},
+			{
+				"name": "Factoring info",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "ComarchCustomerMaster"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

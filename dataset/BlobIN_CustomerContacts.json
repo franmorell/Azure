@@ -1,0 +1,78 @@
+{
+	"name": "BlobIN_CustomerContacts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "HRCustomerContacts_20210331.csv",
+				"folderPath": "IN",
+				"container": "highradius"
+			},
+			"columnDelimiter": "?",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "String"
+			},
+			{
+				"name": "NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUSINESS_UNIT",
+				"type": "String"
+			},
+			{
+				"name": "COMPANY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "SET_ID",
+				"type": "String"
+			},
+			{
+				"name": "PRIMARY_CONTACT_FLAG",
+				"type": "String"
+			},
+			{
+				"name": "CONTACT_FIRST_NAME",
+				"type": "String"
+			},
+			{
+				"name": "CONTACT_LAST_NAME",
+				"type": "String"
+			},
+			{
+				"name": "ROLE",
+				"type": "String"
+			},
+			{
+				"name": "PHONE_NUMBER",
+				"type": "String"
+			},
+			{
+				"name": "EMAIL_ADDRESS",
+				"type": "String"
+			},
+			{
+				"name": "FAX",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

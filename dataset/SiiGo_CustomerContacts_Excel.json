@@ -1,0 +1,76 @@
+{
+	"name": "SiiGo_CustomerContacts_Excel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Customer Contacts",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Customer Contacts.xlsx",
+				"folderPath": "test",
+				"container": "siigo"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "String"
+			},
+			{
+				"name": "NAME",
+				"type": "String"
+			},
+			{
+				"name": "Business Unit",
+				"type": "String"
+			},
+			{
+				"name": "Company id/Code",
+				"type": "String"
+			},
+			{
+				"name": "SET ID",
+				"type": "String"
+			},
+			{
+				"name": "PRIMARY_CONTACT_FLAG",
+				"type": "String"
+			},
+			{
+				"name": "CONTACT_FIRST_NAME",
+				"type": "String"
+			},
+			{
+				"name": "CONTACT_LAST_NAME",
+				"type": "String"
+			},
+			{
+				"name": "ROLE",
+				"type": "String"
+			},
+			{
+				"name": "PHONE_NUMBER",
+				"type": "String"
+			},
+			{
+				"name": "EMAIL_ADDRESS",
+				"type": "String"
+			},
+			{
+				"name": "FAX",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

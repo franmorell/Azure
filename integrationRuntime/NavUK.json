@@ -1,0 +1,7 @@
+{
+	"name": "NavUK",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "NavUK"
+	}
+}

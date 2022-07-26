@@ -1,0 +1,415 @@
+{
+	"name": "AR_SiiGo",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "SiiGo"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMERI_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer",
+									"type": "String"
+								},
+								"sink": {
+									"name": "NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Document",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Term",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Term",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Due Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Due_Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Credit Limit",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Credit_Limit",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Days Elapsed",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Days_Elapsed",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "181+ days",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Days_Over_180",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "120 - 180 days",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Days_120_180",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "91-120 days",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Days_91_120",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "61-90 days",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Days_61_90",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "31-60 days",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Days_31_60",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "1-30 days",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Days_1_30",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Current",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Current",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Total",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Total",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Total Overdue",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Total_Overdue",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Cost center",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Cost_Center_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SiiGo_AR_Excel",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "siigo_AR",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "SiiGo-AR"
+			}
+		},
+		"folder": {
+			"name": "SiiGo"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-04-10T16:49:17Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

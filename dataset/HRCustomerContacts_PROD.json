@@ -1,0 +1,30 @@
+{
+	"name": "HRCustomerContacts_PROD",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HighRadiusSFTP_PROD",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "HighRadius_PROD"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": {
+					"value": "@concat('HRCustomerContacts_',formatDateTime(pipeline().TriggerTime,'yyyyMMdd'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": "/inbound/prod/custextract"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

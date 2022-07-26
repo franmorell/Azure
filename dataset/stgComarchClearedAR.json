@@ -1,0 +1,138 @@
+{
+	"name": "stgComarchClearedAR",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "company_id/code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Customer_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "customer_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "total_amount/invoice_Amount",
+				"type": "decimal",
+				"precision": 15,
+				"scale": 2
+			},
+			{
+				"name": "open_amt",
+				"type": "decimal",
+				"precision": 15,
+				"scale": 2
+			},
+			{
+				"name": "Application ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "document_no",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Document_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Posting_Date/Invoice date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "terms_desc/Payment terms",
+				"type": "nvarchar"
+			},
+			{
+				"name": "net_due_Date/Due date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "currency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "settelmentDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "company_code_currency/Local Currency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "po_no",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "order_No",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Discount Amount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Discount Due Date",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Clearing Date/Accounting date/deposit date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Business Unit",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Retention indicator",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Ship_to_Country_Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Sales person/Representative",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DSI Job No",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "ComarchClearedAR"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

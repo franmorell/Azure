@@ -1,0 +1,190 @@
+{
+	"name": "Ingest_Optima_R_Type",
+	"properties": {
+		"activities": [
+			{
+				"name": "GetTableNames",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderStoredProcedureName": "[dbo].[usp_Optima_List_Tables_By_Ingestion_Type]",
+						"storedProcedureParameters": {
+							"ingestion_type": {
+								"type": "String",
+								"value": "R"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DYWIDAG_LDW_DS",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "LoopTableNames",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetTableNames",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetTableNames').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "CopyTable",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "LookupTimestamp",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlServerSource",
+									"sqlReaderQuery": {
+										"value": "declare @cols varchar(max);\ndeclare @query varchar(max);\n\nset @cols = (SELECT  \ncase when system_type_id in (34,35,99) then  char(39)+ '???' + char(39) + ',' else '[' +  name + '],' end \n\t\t\t           FROM sys.columns\n            where object_id = (\n                select top 1 object_id from sys.objects\n                where name = '@{item().Short_Table_Name}'\n\t\t\t\t)\n\t\t\t\t  order by column_id\n           FOR XML PATH(''));\n\nset @cols = left(@cols,len(@cols)-1);\n\nset @cols = replace(@cols,'&amp;','&');\nset @cols = replace(@cols,'&lt;','<');\nset @cols = replace(@cols,'&gt;','>');\nset @cols = replace(@cols,'&quot;','\"');\nset @cols = replace(@cols,'&apos;',char(39));\n-- set @cols = replace(@cols,'[','A.[');\n\ndeclare @concatcols varchar(max)\nset @concatcols = replace(@cols,',','+''#''+')\nset @concatcols = replace(@concatcols,'''???'' as ','')\nset @concatcols = replace(@concatcols,'[','isnull(cast(')\nset @concatcols = replace(@concatcols,']',' as varchar(max)),''?'')')\ndeclare @extraCol varchar(50)\nset @extraCol = ', @{item().TimeStamp_Field} as TS_Mod'\n\nset @cols = replace(@cols,'???'+char(39),'???'+char(39) + ' as MISSING')\n\nset @query = 'select ' + @cols + @extraCol + ', convert(bigint,CONVERT(decimal(18,4), CURRENT_TIMESTAMP)*1000000 ) as timestamp, HASHBYTES(''SHA2_256'','+ @concatcols +') as rowhash  FROM @{item().Join}';\ndeclare @LookupTimestamp varchar(50)\nset @LookupTimestamp = '@{activity('LookupTimestamp').output.firstRow.maxTS}'\nif(@LookupTimestamp='0')\n  set @LookupTimestamp = '1979-01-01T00:00:00'\nset @query = @query + ' where cast(@{item().TimeStamp_Field} as @{item().TimeStamp_Type}) > cast(''' + @LookupTimestamp + ''' as @{item().TimeStamp_Type})'\nexec (@query);",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ComarchPL_DS",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Destination_TableData_Incremental_DataLake_DS",
+									"type": "DatasetReference",
+									"parameters": {
+										"path": {
+											"value": "RAW/@{item().SourceName}/@{item().File_Name}/@{utcNow('yyyy')}/@{utcNow('MM')}/@{utcNow('dd')}",
+											"type": "Expression"
+										},
+										"file": "@{item().File_Name}"
+									}
+								}
+							]
+						},
+						{
+							"name": "LookupTimestamp",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlDWSource",
+									"sqlReaderStoredProcedureName": "[dbo].[usp_Optima_Select_Latest_Timestamp_For_Table]",
+									"storedProcedureParameters": {
+										"SourceName": {
+											"type": "String",
+											"value": {
+												"value": "@{pipeline().parameters.SourceName}",
+												"type": "Expression"
+											}
+										},
+										"schema": {
+											"type": "String",
+											"value": {
+												"value": "@{item().Table_Schema}",
+												"type": "Expression"
+											}
+										},
+										"tbl": {
+											"type": "String",
+											"value": {
+												"value": "@{item().Short_Table_Name}",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "DYWIDAG_LDW_DS",
+									"type": "DatasetReference"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "ComarchPL"
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Comarch_Optima_Ingestion"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-09T10:12:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

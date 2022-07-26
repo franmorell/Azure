@@ -1,0 +1,30 @@
+{
+	"name": "NavITFilesUploadBalancingExtracts",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "BalancingExtractsIT",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"sourceSchema": "csv",
+					"sourceTable": "Balancing_Extracts_EU-IT01",
+					"SourceName": "EU-IT01-BalancingExtracts"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/highradius/blobs/IT/Balancing_Extracts_EU-IT01",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/1ea1b55d-51c1-4506-9f0f-142fce9d3449/resourceGroups/BI_Solution/providers/Microsoft.Storage/storageAccounts/dywidagbiblobstorage",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

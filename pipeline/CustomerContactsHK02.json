@@ -1,0 +1,416 @@
+{
+	"name": "CustomerContactsHK02",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "AP-HK02"
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "SELECT\n\t'Navision' ERP\n\t,Customer.No_\n\t,Customer.Name\n\t-- ,Contact.[Responsibility Center] Business_Unit\n\t,NULL AS Business_Unit\n\t,NULL SET_ID\n\t,'Yes' Primary_Contact_Flag\n\t,Contact.[First Name] Contact_First_Name\n\t,ISNULL(Contact.Surname, Customer.[Contact]) Contact_Last_Name\n\t,Contact.[Job Title] Role\n\t,ISNULL(Contact.[Phone No_], Customer.[Phone No_]) Phone_Number\n\t,ISNULL(Contact.[E-Mail], Customer.[E-Mail]) EMail_Address\n\t,ISNULL(Contact.[Fax No_],  Customer.[Fax No_]) Fax\nFROM \n\tdbo.[@{pipeline().parameters.sourceSchema}$Customer] Customer\n\tLEFT JOIN dbo.[@{pipeline().parameters.sourceSchema}$Contact] Contact\n\t\tON Contact.No_ = Customer.[Primary Contact No_]\nWHERE\n\tISNULL(Contact.[Name], Customer.[Contact]) IS NOT NULL\n\tOR Contact.[First Name] IS NOT NULL\n\tOR Contact.Surname IS NOT NULL\n\tOR ISNULL(Contact.[Phone No_], Customer.[Phone No_]) IS NOT NULL\n\tOR ISNULL(Contact.[E-Mail], Customer.[E-Mail])  IS NOT NULL\n\tOR ISNULL(Contact.[Fax No_],  Customer.[Fax No_]) IS NOT NULL",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Business_Unit",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SET_ID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SET_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Primary_Contact_Flag",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Primary_Contact_Flag",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Contact_First_Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Contact_First_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Contact_Last_Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Contact_Last_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Role",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Role",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Phone_Number",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Phone_Number",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EMail_Address",
+									"type": "String"
+								},
+								"sink": {
+									"name": "EMail_Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Fax",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Fax",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavHK",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CustomerContacts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerContacts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "AP-HK02-CustomerContacts"
+			},
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "DSI - Hong Kong SPP"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "Customer"
+			}
+		},
+		"folder": {
+			"name": "HK02"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-02-12T21:36:08Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

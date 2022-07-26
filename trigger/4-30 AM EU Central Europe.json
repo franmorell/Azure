@@ -1,0 +1,24 @@
+{
+	"name": "4-30 AM EU Central Europe",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "InvoicesPDF_IT",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-05-04T04:30:00",
+				"timeZone": "W. Europe Standard Time"
+			}
+		}
+	}
+}

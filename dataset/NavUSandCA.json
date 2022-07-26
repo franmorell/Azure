@@ -1,0 +1,13 @@
+{
+	"name": "NavUSandCA",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NavUSandCA",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

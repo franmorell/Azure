@@ -1,0 +1,213 @@
+{
+	"name": "CustomerLedgerDetailed",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "system_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Cust_ Ledger Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Entry Type",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Posting Date",
+				"type": "datetime2",
+				"scale": 3
+			},
+			{
+				"name": "Document Type",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Document No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Amount (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Customer No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Currency Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "User ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Source Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Transaction No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Journal Batch Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Reason Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Debit Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Credit Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Debit Amount (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Credit Amount (LCY)",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Initial Entry Due Date",
+				"type": "datetime2",
+				"scale": 3
+			},
+			{
+				"name": "Initial Entry Global Dim_ 1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Initial Entry Global Dim_ 2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Gen_ Bus_ Posting Group",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Gen_ Prod_ Posting Group",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VAT Bus_ Posting Group",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VAT Prod_ Posting Group",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Initial Document Type",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Applied Cust_ Ledger Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Unapplied",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Unapplied by Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Remaining Pmt_ Disc_ Possible",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Max_ Payment Tolerance",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Reserves",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Sales_Purchaser Person",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Advance Payment",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Holdback",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "VAT Entry Global Dim_ 1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VAT Entry Global Dim_ 2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VAT Entry No_",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LCY",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dwh",
+			"table": "CustomerLedgerDetailed"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

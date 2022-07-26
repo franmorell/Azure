@@ -1,0 +1,71 @@
+{
+	"name": "3-30 AM - Central Europe Nav - for Dashboard",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "DSIJobDE",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "EU-DE01-DSIJob",
+					"sourceSchema": "DSI GmbH Live",
+					"sourceTable": "DSI Job"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "DSIJobProgressLedgerEntryDE",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "EU-DE01-DSIJobProgressLedgerEntry",
+					"sourceSchema": "DSI GmbH Live",
+					"sourceTable": "DSI Job Progress Ledger Entry"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "G_LEntryAggregatedFilteredDE",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "EU-DE01-G_LEntry",
+					"sourceSchema": "DSI GmbH Live",
+					"sourceTable": "G_L Entry"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "DetailedCustLedgEntryDE",
+					"type": "PipelineReference"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "CustLedgerEntryDE",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-08-30T15:31:00",
+				"timeZone": "W. Europe Standard Time",
+				"schedule": {
+					"minutes": [
+						30
+					],
+					"hours": [
+						3
+					]
+				}
+			}
+		}
+	}
+}

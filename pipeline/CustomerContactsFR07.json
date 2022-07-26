@@ -1,0 +1,405 @@
+{
+	"name": "CustomerContactsFR07",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-FR07"
+							}
+						],
+						"query": "With tout as (\nSelect \t\n\t/*(select HR_ERP from COMPTADS.fdhrparam)*/'AS400' as ERP,\n\tclclie as No_,\n\tclnom as NAME,\n\t(select HR_BUN from COMPTADS.fdhrparam) as Business_Unit,\n    (select HR_ste from COMPTADS.fdhrparam) as Company_ID,\n\t'' as SET_ID,\n\t'yes' as Primary_Contact_Flag,\n\t(Select trim(obslib) from COMPTADS.fdobscl where obs40 = 41 and obstie = concat ('   ',clclie) and obstyp = '4' and obslig=2) as Contact_First_Name,\n\t'' as Contact_last_name,\n\t'' as role,\n\t(Select trim(obslib) from COMPTADS.fdobscl where obs40 = 41 and obstie = concat ('   ',clclie) and obstyp = '4' and obslig=1) as Phone_Number,\n\t(Select trim(obslib) from COMPTADS.fdobscl where obs40 = 41 and obstie = concat ('   ',clclie) and obstyp = '4' and obslig=3) as Email_address,\n\t(Select trim(obslib) from COMPTADS.fdobscl where obs40 = 41 and obstie = concat ('   ',clclie) and obstyp = '4' and obslig=5) as Fax\n\n\tfrom COMafiDS.focli\n\twhere clcs41 = 41\n\nUnion all\n\nSelect \t\n\t/*(select HR_ERP from COMPTADS.fdhrparam)*/'AS400' as ERP,\n\tsubstr(obstie, 4, 5) as No_,\n\t(Select clnom from COMafiDS.focli where clcs41 = 41 and clclie = substr(obstie, 4, 5))  as NAME,\n\t(select HR_BUN from COMPTADS.fdhrparam) as Business_Unit,\n    (select HR_ste from COMPTADS.fdhrparam) as Company_ID,\n\t'' as SET_ID,\n\t'' as Primary_Contact_Flag,\n\ttrim(obslib) as Contact_First_Name,\n\t'' as Contact_last_name,\n\t'' as role,\n\t'' as Phone_Number,\n\ttrim(obslib) as Email_address,\n\t'' as Fax\n\n\tfrom COMPTADS.fdobscl\n\twhere obs40 = 41\n\tand obstyp in ('M', 'N')\n\tand obslib <> ' '\n\tand obslib not in (\n\t\tselect\n\t\t\t(Select trim(obslib) from COMPTADS.fdobscl where obs40 = 41 and obstie = concat ('   ',clclie) and obstyp = '4' and obslig=3) as Email_address\n\t\tfrom COMafiDS.focli\n\t\twhere clcs41 = 41\n\t)\t\t\t\t \n)\nselect * from tout\n\n"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NO_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SET_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SET_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PRIMARY_CONTACT_FLAG",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Primary_Contact_Flag",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CONTACT_FIRST_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Contact_First_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CONTACT_LAST_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Contact_Last_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ROLE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Role",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PHONE_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Phone_Number",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EMAIL_ADDRESS",
+									"type": "String"
+								},
+								"sink": {
+									"name": "EMail_Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FAX",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Fax",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AS400FR",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CustomerContacts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerContacts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-FR07-CustomerContacts"
+			}
+		},
+		"folder": {
+			"name": "FR"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-25T20:59:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

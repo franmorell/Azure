@@ -1,0 +1,166 @@
+{
+	"name": "raw_CustomerExtracts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Company_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Country_Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Country_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Address",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Address 2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "City",
+				"type": "nvarchar"
+			},
+			{
+				"name": "State",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Post Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Cust_Country_Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Payment Terms Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Salesperson Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Salesperson Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "credit_status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "date_acct_opened",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Credit Limit (LCY)",
+				"type": "nvarchar"
+			},
+			{
+				"name": "credit_limit_used",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Balance",
+				"type": "nvarchar"
+			},
+			{
+				"name": "highest_credit_limit_used",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_payment_received_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_payment_received_amount",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Language_Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Bank_Communication",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Currency_code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Next_Review_Date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Credit_Analyst",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Credit_Exposure",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Business_Unit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Geographical_Location",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Department_Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Blocked",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Factoring",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VAT Registration No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RunId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SystemId",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "raw_CustomerExtracts"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

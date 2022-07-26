@@ -1,0 +1,6 @@
+{
+	"name": "AS400FR",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

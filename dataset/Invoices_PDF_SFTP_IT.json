@@ -1,0 +1,21 @@
+{
+	"name": "Invoices_PDF_SFTP_IT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HighRadiusSFTP",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Invoices PDF IT"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"folderPath": "/inbound/test/invoices_pdf"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

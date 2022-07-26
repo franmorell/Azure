@@ -1,0 +1,9 @@
+{
+	"name": "DYWIDAGBIDataFactory",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f9067c68-54e7-49b5-84ba-e20c1f9ab26a",
+		"tenantId": "d1e31f27-1738-47b4-8d04-1f3a3ef49867"
+	}
+}

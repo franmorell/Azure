@@ -1,0 +1,106 @@
+{
+	"name": "MasterPipelineIT",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute BalancingExtractsIT",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "BalancingExtractsIT",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute CustomerContactsIT",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute BalancingExtractsIT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CustomerContactsIT",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute CustomerExtractsIT",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute CustomerContactsIT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CustomerExtractsIT",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute CustomerLedgerDocumentsIT",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute CustomerExtractsIT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CustomerLedgerDocumentsIT",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute PaymentsHisotryExtractsIT",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute CustomerLedgerDocumentsIT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PaymentHistoryExtractsIT",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "IT"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-03-07T09:45:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

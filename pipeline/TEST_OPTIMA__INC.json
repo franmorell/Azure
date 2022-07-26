@@ -1,0 +1,102 @@
+{
+	"name": "TEST_OPTIMA__INC",
+	"properties": {
+		"activities": [
+			{
+				"name": "usp_Generate_View_For_DB",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_Generate_View_For_DB]",
+					"storedProcedureParameters": {
+						"FileName": {
+							"value": {
+								"value": "[CDN].[AutoTrasy]",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "ComarchPL",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"TableName": {
+							"value": {
+								"value": "AutoTrasy",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"schema": {
+							"value": {
+								"value": "CDN",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"vwName": {
+							"value": {
+								"value": "vw_TEST_X",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"includeHash": {
+							"value": {
+								"value": "T",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"incrementalFlag": {
+							"value": {
+								"value": "T",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_LDW_Linked_Service",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "ComarchPL"
+			},
+			"ingestion_type": {
+				"type": "string",
+				"defaultValue": "INC"
+			},
+			"IncludeRowhash": {
+				"type": "string",
+				"defaultValue": "T"
+			},
+			"incrementalFlag": {
+				"type": "string",
+				"defaultValue": "T"
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Create Views"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-22T13:44:41Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

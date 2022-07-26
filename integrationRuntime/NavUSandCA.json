@@ -1,0 +1,7 @@
+{
+	"name": "NavUSandCA",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "AM-US01, AM-CA01"
+	}
+}

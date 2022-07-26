@@ -1,0 +1,745 @@
+{
+	"name": "CustomerExtractsIT",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-IT01"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"wildcardFolderPath": "IT",
+							"wildcardFileName": "Customer_Extracting_EU-IT01*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Company_Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Company_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Country_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Country_Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Country_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Address",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Address 2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Address 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "City",
+									"type": "String"
+								},
+								"sink": {
+									"name": "City",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "State",
+									"type": "String"
+								},
+								"sink": {
+									"name": "State",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Post Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Post Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Cust_Country_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Cust_Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Salesperson Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Salesperson Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Salesperson Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Salesperson Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "credit_status",
+									"type": "String"
+								},
+								"sink": {
+									"name": "credit_status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "date_acct_opened",
+									"type": "String"
+								},
+								"sink": {
+									"name": "date_acct_opened",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Credit Limit (LCY)",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Credit Limit (LCY)",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "credit_limit_used",
+									"type": "String"
+								},
+								"sink": {
+									"name": "credit_limit_used",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Balance",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Balance",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "highest_credit_limit_used",
+									"type": "String"
+								},
+								"sink": {
+									"name": "highest_credit_limit_used",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "last_payment_received_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "last_payment_received_date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "last_payment_received_amount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "last_payment_received_amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Language_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Language_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Bank_Communication",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bank_Communication",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Currency_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency_code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Next_Review_Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Next_Review_Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Credit_Analyst",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Credit_Analyst",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Credit_Exposure",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Credit_Exposure",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Business_Unit",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Geographical_Location",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Geographical_Location",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Department_Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Department_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Blocked",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Blocked",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Factoring",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Factoring",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "VAT Registration No_",
+									"type": "String"
+								},
+								"sink": {
+									"name": "VAT Registration No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobIT_CustomerExtracts",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "raw_CustomerExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerExtracts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "raw to stg",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "raw to stg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "raw to stg",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[stg].[sp_rawToStg]",
+					"storedProcedureParameters": {
+						"tablename": {
+							"value": "CustomerExtracts",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ArchvieFiles",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "uspCopyData",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"wildcardFolderPath": "IT",
+							"wildcardFileName": "Customer_Extracting_EU-IT01*",
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobIT_ArchiveSource_CustomerExtracts",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "BlobIT_Archive_CustomerExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-IT01-CustomerExtract"
+			},
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "csv"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "Customer_Extracts_EU-IT01"
+			}
+		},
+		"folder": {
+			"name": "IT"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-07-06T20:20:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

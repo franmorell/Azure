@@ -1,0 +1,13 @@
+{
+	"name": "ComarchPL_KNF",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ComarchPL_KNF",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

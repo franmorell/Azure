@@ -1,0 +1,92 @@
+{
+	"name": "SourceDataset_sh3",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Sheet1",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Dywidag Cleared AR.xls",
+				"folderPath": "Ad_hoc",
+				"container": "highradius"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "customer_name",
+				"type": "String"
+			},
+			{
+				"name": "customer_number",
+				"type": "String"
+			},
+			{
+				"name": "Application_Number",
+				"type": "String"
+			},
+			{
+				"name": "company_code",
+				"type": "String"
+			},
+			{
+				"name": "Document_number",
+				"type": "String"
+			},
+			{
+				"name": "document_date",
+				"type": "String"
+			},
+			{
+				"name": "doctype",
+				"type": "String"
+			},
+			{
+				"name": "invoice_amount",
+				"type": "String"
+			},
+			{
+				"name": "open_amount",
+				"type": "String"
+			},
+			{
+				"name": "global_currency",
+				"type": "String"
+			},
+			{
+				"name": "clearing_date",
+				"type": "String"
+			},
+			{
+				"name": "due_date",
+				"type": "String"
+			},
+			{
+				"name": "currency",
+				"type": "String"
+			},
+			{
+				"name": "payment_terms",
+				"type": "String"
+			},
+			{
+				"name": "invoice_date",
+				"type": "String"
+			},
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "Business Unit",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

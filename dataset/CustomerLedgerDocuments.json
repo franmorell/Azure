@@ -1,0 +1,147 @@
+{
+	"name": "CustomerLedgerDocuments",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "stg"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Company_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Customer_No",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Invoice_Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Open_Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Current_Balance",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Document No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Document_Type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Posting Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Payment Terms Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Due Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Currency_Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Local_Currency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Purchase_Order",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Order_No",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Discount_Amount",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "Discount_Due_Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Clearing_Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Business_Unit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Retention_Indicator",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Ship_To_Country_Code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Salesperson",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DSI_Job_No",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Open",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "RunId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SystemId",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "CustomerLedgerDocuments"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

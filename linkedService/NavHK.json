@@ -1,0 +1,24 @@
+{
+	"name": "NavHK",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=True;Data Source=VENUS;Initial Catalog=NAVHK",
+			"userName": "DC1\\HK-HighRadius_Nav",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "DYWIDAG_KeyVault_LinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "NavHK"
+			}
+		},
+		"connectVia": {
+			"referenceName": "NavHK",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

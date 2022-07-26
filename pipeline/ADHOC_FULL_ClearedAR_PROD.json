@@ -1,0 +1,503 @@
+{
+	"name": "ADHOC_FULL_ClearedAR_PROD",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "/*\nDECLARE @LastLoadDate DATETIME\nSELECT @LastLoadDate = MAX(EndDateTime)\nFROM load.Run\nWHERE SourceName = '@{pipeline().parameters.SourceName}';\n*/\nSELECT \n    ds.SYSTEM_NAME AS ERP,\n    hcld.SYSTEM_ID AS COMPANY_CODE,\n    hc.CUSTOMER_NUMBER AS CUSTOMER_ID,\n    scm.CUSTOMER_NAME,\n    scld.DOCUMENT_AMOUNT,\n    scld.OPEN_AMOUNT,\n    hcld.CUSTOMER_LEDGER_ENTRY_ID AS APPLICATION_ID,\n    scld.DOCUMENT_NUMBER,\n    hdt.DOCUMENT_TYPE,\n    scld.POSTING_DATE,\n    hpt.PAYMENT_TERMS_CODE AS TERMS_DESC,\n    scld.DUE_DATE,\n    scld.DOCUMENT_CURRENCY_CODE,\n    scld.ENTITY_CURRENCY_CODE AS COMPANY_CURRENCY_CODE,\n    scld.PURCHASE_ORDER,\n    scld.ORDER_NUMBER,\n    scld.DISCOUNT_AMOUNT,\n    scld.DISCOUNT_DUE_DATE,\n    IIF(scld.CLEARING_DATE IS NULL OR scld.CLEARING_DATE < scld.PURCHASE_ORDER, scld.DUE_DATE, scld.CLEARING_DATE) AS CLEARING_DATE,\n    scld.BUSINESS_UNIT,\n    scld.RETENTION_INDICATOR,\n    scld.RETENTION_AMOUNT,\n    hcc.COUNTRY_CODE AS SHIP_TO_COUNTRY_CODE,\n    ssp.SALES_PERSON_NAME AS SALES_PERSON,\n    scld.KOPRO_CODE,\n    scld.DESCRIPTION,\n    scld.RETENTION_DUE_DATE,\n    scld.USER_ID\nFROM\n    dv.H_CUSTOMER_LEDGER_DOCUMENT hcld WITH(NOLOCK)\n    LEFT JOIN dv.DICT_SYSTEM ds WITH(NOLOCK) ON hcld.SYSTEM_ID = ds.SYSTEM_ID\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_CUSTOMER_BY_DATE(GETDATE()) lcldc ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldc.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_CUSTOMER hc WITH(NOLOCK) ON lcldc.CUSTOMER_HASH_KEY = hc.CUSTOMER_HASH_KEY\n    LEFT JOIN dv.tfnS_CUSTOMER_MASTER_BY_DATE(GETDATE()) scm ON hc.CUSTOMER_HASH_KEY = scm.CUSTOMER_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_LEDGER_DOCUMENT_BY_DATE(GETDATE()) scld ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = scld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_DOCUMENT_TYPE_BY_DATE(GETDATE()) lclddt ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lclddt.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_DOCUMENT_TYPE hdt WITH(NOLOCK) ON lclddt.DOCUMENT_TYPE_HASH_KEY = hdt.DOCUMENT_TYPE_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_PAYMENT_TERMS_BY_DATE(GETDATE()) lcldpt ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldpt.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_PAYMENT_TERMS hpt WITH(NOLOCK) ON lcldpt.PAYMENT_TERMS_HASH_KEY = hpt.PAYMENT_TERMS_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_SHIP_TO_COUNTRY_BY_DATE(GETDATE()) lcldstc ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldstc.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_COUNTRY hcc WITH(NOLOCK) ON lcldstc.COUNTRY_HASH_KEY = hcc.COUNTRY_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_SALES_PERSON_BY_DATE(GETDATE()) lcldsp ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldsp.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    LEFT JOIN dv.tfnS_SALES_PERSON_BY_DATE(GETDATE()) ssp ON lcldsp.SALES_PERSON_HASH_KEY = ssp.SALES_PERSON_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_LEDGER_DOCUMENT_DELETION_BY_DATE(GETDATE()) scldd ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = scldd.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\nWHERE 1=1\n    AND scldd.IS_DELETED = 'NO'\n    AND scld.OPEN_INDICATOR = 0\n    AND scld.POSTING_DATE >= DATEADD(YEAR,-2,GETDATE())\n    AND hcld.SYSTEM_ID IN ('EU-DE01')\n    /*AND (hcld.LOAD_DTS > @LastLoadDate \n        OR lcldc.LOAD_DTS > @LastLoadDate \n        OR scm.LOAD_DTS > @LastLoadDate \n        OR scld.LOAD_DTS > @LastLoadDate \n        OR lclddt.LOAD_DTS > @LastLoadDate\n        OR hdt.LOAD_DTS > @LastLoadDate \n        OR lcldpt.LOAD_DTS > @LastLoadDate \n        OR hpt.LOAD_DTS > @LastLoadDate \n        OR lcldstc.LOAD_DTS > @LastLoadDate \n        OR hcc.LOAD_DTS > @LastLoadDate \n        OR lcldsp.LOAD_DTS > @LastLoadDate \n        OR ssp.LOAD_DTS > @LastLoadDate\n    )*/",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "SftpWriteSettings",
+							"operationTimeout": "01:00:00",
+							"useTempFileRename": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "DOCUMENT_AMOUNT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OPEN_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "OPEN_AMOUNT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "APPLICATION_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "APPLICATION_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "POSTING_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "POSTING_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DUE_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PURCHASE_ORDER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PURCHASE_ORDER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORDER_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ORDER_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "DISCOUNT_AMOUNT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DISCOUNT_DUE_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CLEARING_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "CLEARING_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_INDICATOR",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "RETENTION_INDICATOR",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "RETENTION_AMOUNT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SHIP_TO_COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SHIP_TO_COUNTRY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SALES_PERSON",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SALES_PERSON",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "KOPRO_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "KOPRO_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DESCRIPTION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DESCRIPTION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "RETENTION_DUE_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "USER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "USER_ID",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DYWIDAG_DWH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "HRClearedAR_PROD_adhoc",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "DYWIDAG_DWH-HRClearedAR"
+			}
+		},
+		"folder": {
+			"name": "HighRadius_PROD"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-07-08T20:46:07Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

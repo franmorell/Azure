@@ -1,0 +1,1719 @@
+{
+	"name": "FullExtract_to_DM",
+	"properties": {
+		"activities": [
+			{
+				"name": "PaymentHistory",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "DECLARE @LastLoadDate DATETIME\nSELECT @LastLoadDate = MAX(EndDateTime)\nFROM load.Run\nWHERE SourceName = '@{pipeline().parameters.SourceName}';\n\nSELECT\n    ds.SYSTEM_NAME AS ERP,\n    hp.SYSTEM_ID AS COMPANY_CODE,\n    hp.PAYMENT_NUMBER AS APPLICATION_ID,\n    sp.CREATION_DATE,\n    hc.CUSTOMER_NUMBER AS CUSTOMER_ID,\n    scm.CUSTOMER_NAME,\n    sp.BUSINESS_UNIT,\n    sp.REGION,\n    sp.TRANSACTION_ID,\n    hdt.DOCUMENT_TYPE,\n    sp.TRANSACTION_DATE,\n    sp.TRANSACTION_CURRENCY_CODE,\n    sp.REPORTING_TX_AMOUNT,\n    sp.TX_AMOUNT_APPLIED,\n    sp.INVOICE_NUMBER,\n    ISNULL(sp.DOCUMENT_DATE, sp.CREATION_DATE) AS DOCUMENT_DATE,\n    sp.ORIGINAL_TX_AMOUNT,\n    sp.PAYMENT_METHOD,\n    hcc.COUNTRY_CODE,\n    poda.ORIGINAL_DOCUMENT_APPLICATION_ID\nFROM\n    dv.H_PAYMENT hp WITH(NOLOCK)\n    LEFT JOIN dv.DICT_SYSTEM ds WITH(NOLOCK) ON hp.SYSTEM_ID = ds.SYSTEM_ID\n    JOIN dv.tfnS_PAYMENT_BY_DATE(GETDATE()) sp ON hp.PAYMENT_HASH_KEY = sp.PAYMENT_HASH_KEY\n    JOIN dv.tfnL_PAYMENT_CUSTOMER_BY_DATE(GETDATE()) lpc ON hp.PAYMENT_HASH_KEY = lpc.PAYMENT_HASH_KEY\n    JOIN dv.H_CUSTOMER hc WITH(NOLOCK) ON lpc.CUSTOMER_HASH_KEY = hc.CUSTOMER_HASH_KEY\n    LEFT JOIN dv.tfnS_CUSTOMER_MASTER_BY_DATE(GETDATE()) scm ON hc.CUSTOMER_HASH_KEY = scm.CUSTOMER_HASH_KEY\n    JOIN dv.tfnL_PAYMENT_COUNTRY_BY_DATE(GETDATE()) lpcc ON hp.PAYMENT_HASH_KEY = lpcc.PAYMENT_HASH_KEY\n    JOIN dv.H_COUNTRY hcc WITH(NOLOCK) ON lpcc.COUNTRY_HASH_KEY = hcc.COUNTRY_HASH_KEY\n    JOIN dv.tfnL_PAYMENT_DOCUMENT_TYPE_BY_DATE(GETDATE()) lpdt ON hp.PAYMENT_HASH_KEY = lpdt.PAYMENT_HASH_KEY\n    JOIN dv.H_DOCUMENT_TYPE hdt WITH(NOLOCK) ON lpdt.DOCUMENT_TYPE_HASH_KEY = hdt.DOCUMENT_TYPE_HASH_KEY\n    JOIN dv.tfnS_PAYMENT_DELETION_BY_DATE(GETDATE()) spd ON hp.PAYMENT_HASH_KEY = spd.PAYMENT_HASH_KEY\n    LEFT JOIN dv.tfnPAYMENT_ORIGINAL_DOCUMENT_APPLICATION_ID_BY_DATE(GETDATE()) poda ON hp.PAYMENT_HASH_KEY = poda.PAYMENT_HASH_KEY\nWHERE 1=1\n    --AND hp.SYSTEM_ID = 'EU-DE01'\n    AND spd.IS_DELETED = 'NO'\n    AND sp.CREATION_DATE >= DATEADD(MONTH,-6,GETDATE())\n    AND sp.OPEN_INDICATOR=0",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table hrc.PaymentHistory",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "APPLICATION_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "APPLICATION_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREATION_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "CREATION_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "REGION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "REGION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TRANSACTION_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TRANSACTION_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TRANSACTION_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "TRANSACTION_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "TRANSACTION_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TRANSACTION_CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "REPORTING_TX_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "REPORTING_TX_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "TX_AMOUNT_APPLIED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "TX_AMOUNT_APPLIED",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "INVOICE_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "INVOICE_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DOCUMENT_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "ORIGINAL_TX_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "ORIGINAL_TX_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "PAYMENT_METHOD",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PAYMENT_METHOD",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COUNTRY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORIGINAL_DOCUMENT_APPLICATION_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ORIGINAL_DOCUMENT_APPLICATION_ID",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DYWIDAG_DWH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "hrc_PaymentHistory",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "PaymentHistory",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "ClearedAR",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "OpenItems",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "CustomerContacts",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "CustomerMaster",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "PaymentHistory",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ClearedAR",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "OpenItems",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "CustomerContacts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "CustomerMaster",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ClearedAR",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "\nDECLARE @LastLoadDate DATETIME\nSELECT @LastLoadDate = MAX(EndDateTime)\nFROM load.Run\nWHERE SourceName = '@{pipeline().parameters.SourceName}';\n\nSELECT \n    ds.SYSTEM_NAME AS ERP,\n    hcld.SYSTEM_ID AS COMPANY_CODE,\n    hc.CUSTOMER_NUMBER AS CUSTOMER_ID,\n    scm.CUSTOMER_NAME,\n    scld.DOCUMENT_AMOUNT,\n    scld.OPEN_AMOUNT,\n    hcld.CUSTOMER_LEDGER_ENTRY_ID AS APPLICATION_ID,\n    scld.DOCUMENT_NUMBER,\n    hdt.DOCUMENT_TYPE,\n    scld.POSTING_DATE,\n    hpt.PAYMENT_TERMS_CODE AS TERMS_DESC,\n    scld.DUE_DATE,\n    scld.DOCUMENT_CURRENCY_CODE,\n    scld.ENTITY_CURRENCY_CODE AS COMPANY_CURRENCY_CODE,\n    scld.PURCHASE_ORDER,\n    scld.ORDER_NUMBER,\n    scld.DISCOUNT_AMOUNT,\n    scld.DISCOUNT_DUE_DATE,\n    IIF(scld.CLEARING_DATE IS NULL OR scld.CLEARING_DATE < scld.PURCHASE_ORDER, scld.DUE_DATE, scld.CLEARING_DATE) AS CLEARING_DATE,\n    scld.BUSINESS_UNIT,\n    scld.RETENTION_INDICATOR,\n    scld.RETENTION_AMOUNT,\n    hcc.COUNTRY_CODE AS SHIP_TO_COUNTRY_CODE,\n    ssp.SALES_PERSON_NAME AS SALES_PERSON,\n    scld.KOPRO_CODE,\n    scld.DESCRIPTION,\n    scld.RETENTION_DUE_DATE,\n    scld.USER_ID\nFROM\n    dv.H_CUSTOMER_LEDGER_DOCUMENT hcld WITH(NOLOCK)\n    LEFT JOIN dv.DICT_SYSTEM ds WITH(NOLOCK) ON hcld.SYSTEM_ID = ds.SYSTEM_ID\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_CUSTOMER_BY_DATE(GETDATE()) lcldc ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldc.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_CUSTOMER hc WITH(NOLOCK) ON lcldc.CUSTOMER_HASH_KEY = hc.CUSTOMER_HASH_KEY\n    LEFT JOIN dv.tfnS_CUSTOMER_MASTER_BY_DATE(GETDATE()) scm ON hc.CUSTOMER_HASH_KEY = scm.CUSTOMER_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_LEDGER_DOCUMENT_BY_DATE(GETDATE()) scld ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = scld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_DOCUMENT_TYPE_BY_DATE(GETDATE()) lclddt ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lclddt.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_DOCUMENT_TYPE hdt WITH(NOLOCK) ON lclddt.DOCUMENT_TYPE_HASH_KEY = hdt.DOCUMENT_TYPE_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_PAYMENT_TERMS_BY_DATE(GETDATE()) lcldpt ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldpt.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_PAYMENT_TERMS hpt WITH(NOLOCK) ON lcldpt.PAYMENT_TERMS_HASH_KEY = hpt.PAYMENT_TERMS_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_SHIP_TO_COUNTRY_BY_DATE(GETDATE()) lcldstc ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldstc.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_COUNTRY hcc WITH(NOLOCK) ON lcldstc.COUNTRY_HASH_KEY = hcc.COUNTRY_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_SALES_PERSON_BY_DATE(GETDATE()) lcldsp ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldsp.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    LEFT JOIN dv.tfnS_SALES_PERSON_BY_DATE(GETDATE()) ssp ON lcldsp.SALES_PERSON_HASH_KEY = ssp.SALES_PERSON_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_LEDGER_DOCUMENT_DELETION_BY_DATE(GETDATE()) scldd ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = scldd.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\nWHERE 1=1\n    --AND hcld.SYSTEM_ID = 'EU-DE01'\n    AND scldd.IS_DELETED = 'NO'\n    AND scld.OPEN_INDICATOR = 0\n    AND scld.POSTING_DATE >= DATEADD(YEAR,-2,GETDATE())\n\t-- AND hcld.LOAD_DTS > @LastLoadDate \n\t-- AND lcldc.LOAD_DTS > @LastLoadDate \n\t-- AND scm.LOAD_DTS > @LastLoadDate \n\t-- AND scld.LOAD_DTS > @LastLoadDate \n\t-- AND lclddt.LOAD_DTS > @LastLoadDate\n\t-- AND hdt.LOAD_DTS > @LastLoadDate \n\t-- AND lcldpt.LOAD_DTS > @LastLoadDate \n\t-- AND hpt.LOAD_DTS > @LastLoadDate \n\t-- AND lcldstc.LOAD_DTS > @LastLoadDate \n\t-- AND hcc.LOAD_DTS > @LastLoadDate \n\t-- AND lcldsp.LOAD_DTS > @LastLoadDate \n\t-- AND ssp.LOAD_DTS > @LastLoadDate ",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table hrc.ClearedAR",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "DOCUMENT_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "OPEN_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "OPEN_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "APPLICATION_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "APPLICATION_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "POSTING_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "POSTING_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DUE_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PURCHASE_ORDER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PURCHASE_ORDER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORDER_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ORDER_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "DISCOUNT_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DISCOUNT_DUE_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CLEARING_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "CLEARING_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_INDICATOR",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "RETENTION_INDICATOR",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "RETENTION_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "SHIP_TO_COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SHIP_TO_COUNTRY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SALES_PERSON",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SALES_PERSON",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "KOPRO_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "KOPRO_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DESCRIPTION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DESCRIPTION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "RETENTION_DUE_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "USER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "USER_ID",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DYWIDAG_DWH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "hrc_ClearedAR",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "OpenItems",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "DECLARE @LastLoadDate DATETIME\nSELECT @LastLoadDate = MAX(EndDateTime)\nFROM load.Run\nWHERE SourceName = '@{pipeline().parameters.SourceName}';\n\nSELECT \n    ds.SYSTEM_NAME AS ERP,\n    hcld.SYSTEM_ID AS COMPANY_CODE,\n    hc.CUSTOMER_NUMBER AS CUSTOMER_ID,\n    scm.CUSTOMER_NAME,\n    scld.DOCUMENT_AMOUNT,\n    scld.OPEN_AMOUNT,\n    hcld.CUSTOMER_LEDGER_ENTRY_ID AS APPLICATION_ID,\n    scld.DOCUMENT_NUMBER,\n    hdt.DOCUMENT_TYPE,\n    scld.POSTING_DATE,\n    hpt.PAYMENT_TERMS_CODE AS TERMS_DESC,\n    scld.DUE_DATE,\n    scld.DOCUMENT_CURRENCY_CODE,\n    scld.ENTITY_CURRENCY_CODE AS COMPANY_CURRENCY_CODE,\n    scld.PURCHASE_ORDER,\n    scld.ORDER_NUMBER,\n    scld.DISCOUNT_AMOUNT,\n    scld.DISCOUNT_DUE_DATE,\n    scld.CLEARING_DATE,\n    scld.BUSINESS_UNIT,\n    scld.RETENTION_INDICATOR,\n    scld.RETENTION_AMOUNT,\n    hcc.COUNTRY_CODE AS SHIP_TO_COUNTRY_CODE,\n    ssp.SALES_PERSON_NAME AS SALES_PERSON,\n    scld.KOPRO_CODE,\n    scld.DESCRIPTION,\n    scld.RETENTION_DUE_DATE,\n    scld.USER_ID\nFROM\n    dv.H_CUSTOMER_LEDGER_DOCUMENT hcld WITH(NOLOCK)\n    LEFT JOIN dv.DICT_SYSTEM ds WITH(NOLOCK) ON hcld.SYSTEM_ID = ds.SYSTEM_ID\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_CUSTOMER_BY_DATE(GETDATE()) lcldc ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldc.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_CUSTOMER hc WITH(NOLOCK) ON lcldc.CUSTOMER_HASH_KEY = hc.CUSTOMER_HASH_KEY\n    LEFT JOIN dv.tfnS_CUSTOMER_MASTER_BY_DATE(GETDATE()) scm ON hc.CUSTOMER_HASH_KEY = scm.CUSTOMER_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_LEDGER_DOCUMENT_BY_DATE(GETDATE()) scld ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = scld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_DOCUMENT_TYPE_BY_DATE(GETDATE()) lclddt ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lclddt.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_DOCUMENT_TYPE hdt WITH(NOLOCK) ON lclddt.DOCUMENT_TYPE_HASH_KEY = hdt.DOCUMENT_TYPE_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_PAYMENT_TERMS_BY_DATE(GETDATE()) lcldpt ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldpt.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_PAYMENT_TERMS hpt WITH(NOLOCK) ON lcldpt.PAYMENT_TERMS_HASH_KEY = hpt.PAYMENT_TERMS_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_SHIP_TO_COUNTRY_BY_DATE(GETDATE()) lcldstc ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldstc.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    JOIN dv.H_COUNTRY hcc WITH(NOLOCK) ON lcldstc.COUNTRY_HASH_KEY = hcc.COUNTRY_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_LEDGER_DOCUMENT_SALES_PERSON_BY_DATE(GETDATE()) lcldsp ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = lcldsp.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\n    LEFT JOIN dv.tfnS_SALES_PERSON_BY_DATE(GETDATE()) ssp ON lcldsp.SALES_PERSON_HASH_KEY = ssp.SALES_PERSON_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_LEDGER_DOCUMENT_DELETION_BY_DATE(GETDATE()) scldd ON hcld.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY = scldd.CUSTOMER_LEDGER_DOCUMENT_HASH_KEY\nWHERE 1=1\n-- AND hcld.SYSTEM_ID = 'EU-DE01'\n    AND scldd.IS_DELETED = 'NO'\n    AND scld.OPEN_INDICATOR = 1\n-- AND hcld.LOAD_DTS > @LastLoadDate \n-- AND lcldc.LOAD_DTS > @LastLoadDate\n-- AND hc.LOAD_DTS > @LastLoadDate \n-- AND scm.LOAD_DTS > @LastLoadDate \n-- AND scld.LOAD_DTS > @LastLoadDate \n-- AND lclddt.LOAD_DTS > @LastLoadDate \n-- AND hdt.LOAD_DTS > @LastLoadDate \n-- AND lcldpt.LOAD_DTS > @LastLoadDate \n-- AND hpt.LOAD_DTS > @LastLoadDate \n-- AND lcldstc.LOAD_DTS > @LastLoadDate \n-- AND hcc.LOAD_DTS > @LastLoadDate \n-- AND lcldsp.LOAD_DTS > @LastLoadDate \n-- AND ssp.LOAD_DTS > @LastLoadDate",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table hrc.OpenItems",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "DOCUMENT_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "OPEN_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "OPEN_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "APPLICATION_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "APPLICATION_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "POSTING_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "POSTING_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DUE_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DOCUMENT_CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PURCHASE_ORDER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PURCHASE_ORDER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORDER_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ORDER_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "DISCOUNT_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DISCOUNT_DUE_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CLEARING_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "CLEARING_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_INDICATOR",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "RETENTION_INDICATOR",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "RETENTION_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "SHIP_TO_COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SHIP_TO_COUNTRY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SALES_PERSON",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SALES_PERSON",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "KOPRO_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "KOPRO_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DESCRIPTION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DESCRIPTION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RETENTION_DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "RETENTION_DUE_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "USER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "USER_ID",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DYWIDAG_DWH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "hrc_OpenItems",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "CustomerContacts",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "DECLARE @LastLoadDate DATETIME\nSELECT @LastLoadDate = MAX(EndDateTime)\nFROM load.Run\nWHERE SourceName = '@{pipeline().parameters.SourceName}';\n\nSELECT\n    ds.SYSTEM_NAME as ERP,\n    hc.CUSTOMER_NUMBER AS CUSTOMER_ID,\n    scc.NAME,\n    scc.BUSINESS_UNIT,\n    hcc.SYSTEM_ID AS COMPANY_CODE,\n    scc.SET_ID,\n    scc.PRIMARY_CONTACT_FLAG,\n    hcc.FIRST_NAME AS CONTACT_FIRST_NAME,\n    hcc.LAST_NAME AS CONTACT_LAST_NAME,\n    scc.ROLE,\n    scc.PHONE_NUMBER,\n    scc.EMAIL_ADDRESS,\n    scc.FAX\nFROM\n    dv.H_CUSTOMER_CONTACT hcc WITH(NOLOCK)\n    LEFT JOIN dv.DICT_SYSTEM ds WITH(NOLOCK) ON hcc.SYSTEM_ID = ds.SYSTEM_ID\n    JOIN dv.tfnS_CUSTOMER_CONTACT_BY_DATE(GETDATE()) scc ON hcc.CUSTOMER_CONTACT_HASH_KEY = scc.CUSTOMER_CONTACT_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_CUSTOMER_CONTACT_BY_DATE(GETDATE()) lccc ON hcc.CUSTOMER_CONTACT_HASH_KEY = lccc.CUSTOMER_CONTACT_HASH_KEY\n    JOIN dv.H_CUSTOMER hc WITH(NOLOCK) ON lccc.CUSTOMER_HASH_KEY = hc.CUSTOMER_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_CONTACT_DELETION_BY_DATE(GETDATE()) sccd ON hcc.CUSTOMER_CONTACT_HASH_KEY = sccd.CUSTOMER_CONTACT_HASH_KEY\nWHERE 1=1\n-- AND hcc.SYSTEM_ID = 'EU-DE01'\n    AND sccd.IS_DELETED = 'NO'\n-- \thcc.LOAD_DTS > @LastLoadDate \n-- AND scc.LOAD_DTS > @LastLoadDate \n-- AND lccc.LOAD_DTS > @LastLoadDate \n-- AND hc.LOAD_DTS > @LastLoadDate",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table hrc.CustomerContacts",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SET_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SET_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PRIMARY_CONTACT_FLAG",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRIMARY_CONTACT_FLAG",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CONTACT_FIRST_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CONTACT_FIRST_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CONTACT_LAST_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CONTACT_LAST_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ROLE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ROLE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PHONE_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PHONE_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EMAIL_ADDRESS",
+									"type": "String"
+								},
+								"sink": {
+									"name": "EMAIL_ADDRESS",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FAX",
+									"type": "String"
+								},
+								"sink": {
+									"name": "FAX",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DYWIDAG_DWH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "hrc_CustomerContacts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "CustomerMaster",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "DECLARE @LastLoadDate DATETIME\nSELECT @LastLoadDate = MAX(EndDateTime)\nFROM load.Run\nWHERE SourceName = '@{pipeline().parameters.SourceName}'\nAND [Status] = 'Success';\n\nSELECT\n    ds.SYSTEM_NAME as ERP,\n    hc.CUSTOMER_NUMBER AS CUSTOMER_ID,\n    hc.SYSTEM_ID AS COMPANY_CODE,\n    hcc.COUNTRY_CODE,\n    dc.COUNTRY_NAME as COUNTRY,\n    scm.CUSTOMER_NAME,\n    scm.ADDRESS AS MAIL_ADDRESS1,\n    scm.ADDRESS_2 AS MAIL_ADDRESS2,\n    scm.CITY AS MAIL_CITY,\n    scm.[STATE] AS MAIL_STATE,\n    scm.POSTAL_CODE AS MAIL_POSTAL_CODE,\n    cdc.COUNTRY_NAME AS MAIL_COUNTRY,\n    scm.VAT_REGISTRATION_NO,\n    hpt.PAYMENT_TERMS_CODE AS TERMS_DESC,\n    SSP.SALES_PERSON_NAME AS SALESREP,\n    scci.CREDIT_STATUS,\n    scci.DATE_ACCT_OPENED,\n    scci.CREDIT_LIMIT_LCY,\n    scci.CREDIT_LIMIT_USED,\n    scci.BALANCE,\n    scci.HIGHEST_CREDIT_LIMIT_USED,\n    scci.LAST_PAYMENT_RECEIVED_DATE,\n    scci.LAST_PAYMENT_RECEIVED_AMOUNT,\n    IIF(scm.LANGUAGE_CODE IS NULL OR scm.LANGUAGE_CODE = '', 'EN', scm.LANGUAGE_CODE) AS LANGUAGE_CODE,\n    scci.BANK_COMMUNICATION,\n    scci.CURRENCY_CODE,\n    scci.NEXT_REVIEW_DATE,\n    scci.CREDIT_ANALYST,\n    scci.CREDIT_EXPOSURE,\n    scm.BUSINESS_UNIT,\n    scm.GEOGRAPHICAL_LOCATION,\n    scm.DEPARTMENT_CODE,\n    scci.BLOCKED,\n    scci.FACTORING_INDICATOR AS FACTORING,\n    scm.STATUS\nFROM\n    dv.H_CUSTOMER hc WITH(NOLOCK)\n    LEFT JOIN dv.DICT_SYSTEM ds WITH(NOLOCK) ON hc.SYSTEM_ID = ds.SYSTEM_ID\n    JOIN dv.tfnL_CUSTOMER_COUNTRY_BY_DATE(GETDATE()) lcc ON hc.CUSTOMER_HASH_KEY = lcc.CUSTOMER_HASH_KEY\n    JOIN dv.H_COUNTRY hcc  WITH(NOLOCK) ON lcc.COUNTRY_HASH_KEY = hcc.COUNTRY_HASH_KEY\n    LEFT JOIN dv.DICT_COUNTRY dc WITH(NOLOCK) ON hcc.COUNTRY_CODE = dc.COUNTRY_CODE\n    JOIN dv.tfnS_CUSTOMER_MASTER_BY_DATE(GETDATE()) scm ON hc.CUSTOMER_HASH_KEY = scm.CUSTOMER_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_PAYMENT_TERMS_BY_DATE(GETDATE()) lcpt ON hc.CUSTOMER_HASH_KEY = lcpt.CUSTOMER_HASH_KEY\n    JOIN dv.H_PAYMENT_TERMS hpt WITH(NOLOCK) ON lcpt.PAYMENT_TERMS_HASH_KEY = hpt.PAYMENT_TERMS_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_SALES_PERSON_BY_DATE(GETDATE()) lcsp ON hc.CUSTOMER_HASH_KEY = lcsp.CUSTOMER_HASH_KEY\n    LEFT JOIN DV.tfnS_SALES_PERSON_BY_DATE(GETDATE()) ssp ON lcsp.SALES_PERSON_HASH_KEY = SSP.SALES_PERSON_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_CREDIT_INFO_BY_DATE(GETDATE()) scci ON hc.CUSTOMER_HASH_KEY = scci.CUSTOMER_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_DELETION_BY_DATE(GETDATE()) scd ON hc.CUSTOMER_HASH_KEY = scd.CUSTOMER_HASH_KEY\n    LEFT JOIN dv.DICT_COUNTRY cdc WITH(NOLOCK) ON scm.CUSTOMER_COUNTRY_CODE = cdc.COUNTRY_CODE\nWHERE 1=1\n    AND scd.IS_DELETED = 'NO'\n\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table hrc.CustomerMaster",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COUNTRY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COUNTRY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_ADDRESS1",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_ADDRESS1",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_ADDRESS2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_ADDRESS2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_CITY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_CITY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_STATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_STATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_POSTAL_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_POSTAL_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_COUNTRY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MAIL_COUNTRY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "VAT_REGISTRATION_NO",
+									"type": "String"
+								},
+								"sink": {
+									"name": "VAT_REGISTRATION_NO",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SALESREP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SALESREP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_STATUS",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CREDIT_STATUS",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DATE_ACCT_OPENED",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DATE_ACCT_OPENED",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_LIMIT_LCY",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "CREDIT_LIMIT_LCY",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_LIMIT_USED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "CREDIT_LIMIT_USED",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "BALANCE",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "BALANCE",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "HIGHEST_CREDIT_LIMIT_USED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "HIGHEST_CREDIT_LIMIT_USED",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "LAST_PAYMENT_RECEIVED_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "LAST_PAYMENT_RECEIVED_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "LAST_PAYMENT_RECEIVED_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "LAST_PAYMENT_RECEIVED_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "LANGUAGE_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "LANGUAGE_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BANK_COMMUNICATION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BANK_COMMUNICATION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CURRENCY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NEXT_REVIEW_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "NEXT_REVIEW_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_ANALYST",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CREDIT_ANALYST",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_EXPOSURE",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "CREDIT_EXPOSURE",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "GEOGRAPHICAL_LOCATION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "GEOGRAPHICAL_LOCATION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DEPARTMENT_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DEPARTMENT_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BLOCKED",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BLOCKED",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FACTORING",
+									"type": "Byte"
+								},
+								"sink": {
+									"name": "FACTORING",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "STATUS",
+									"type": "String"
+								},
+								"sink": {
+									"name": "STATUS",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DYWIDAG_DWH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "hrc_CustomerMaster",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "DYWIDAG_DWH-FullExtract_to_DM"
+			}
+		},
+		"folder": {
+			"name": "HighRadius_TEST"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-03-30T20:23:51Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

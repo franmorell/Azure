@@ -1,0 +1,7 @@
+{
+	"name": "NavDE",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "EU-DE01, EU-CZ01, EU-PL01, EU-NL01, EU-NL02, EU-BE01"
+	}
+}

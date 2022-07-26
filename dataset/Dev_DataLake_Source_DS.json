@@ -1,0 +1,26 @@
+{
+	"name": "Dev_DataLake_Source_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dev_DataLake_LinkedSVC",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "TAGZ/Source_Datasets"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "devfs"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "~",
+			"firstRowAsHeader": true,
+			"quoteChar": "~"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

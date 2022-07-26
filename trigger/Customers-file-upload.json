@@ -1,0 +1,17 @@
+{
+	"name": "Customers-file-upload",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/erpexport/blobs/Customers",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/186d021f-bd89-4a77-a5d2-6f63c75fa58f/resourceGroups/BI_Solution/providers/Microsoft.Storage/storageAccounts/dywidagbiblobstorage",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

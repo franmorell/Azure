@@ -1,0 +1,80 @@
+{
+	"name": "06-40AM - HRC",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "BalancingExtracts",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "DYWIDAG_DWH-HRBalancingExtracts_TEST"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "ClearedAR",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "DYWIDAG_DWH-HRClearedAR_TEST"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "CustomerContacts",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "DYWIDAG_DWH-HRCustomerContacts_TEST"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "CustomerMaster",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "DYWIDAG_DWH-HRCustomerMaster_TEST"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "OpenItems",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "DYWIDAG_DWH-HROpenItems_TEST"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "PaymentHistory",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "DYWIDAG_DWH-HRPaymentHistory_TEST"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-04-13T03:45:00",
+				"timeZone": "Central European Standard Time",
+				"schedule": {
+					"minutes": [
+						40
+					],
+					"hours": [
+						6
+					]
+				}
+			}
+		}
+	}
+}

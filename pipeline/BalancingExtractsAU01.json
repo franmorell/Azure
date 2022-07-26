@@ -1,0 +1,366 @@
+{
+	"name": "BalancingExtractsAU01",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "AP-AU01"
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "WITH DetailedCustLedgerEntryCTE AS (\n\tSELECT\n\t\t[Cust_ Ledger Entry No_],\n\t\tSUM(Amount) AS Open_Amount,\n\t\tSUM([Amount (LCY)]) AS Open_Amount_LCY\n\tFROM\n\t\tdbo.[@{pipeline().parameters.sourceSchema}$Detailed Cust_ Ledg_ Entry]\n\tGROUP BY\n\t\t[Cust_ Ledger Entry No_]\n)\nSELECT \n\t'Navision' as ERP,\n\tcle.[Customer No_] as Customer_No,\n\tCASE cle.[Document Type]\n\t\twhen 0 THEN 'N/A'\n\t\tWHEN 1 THEN 'PAYMENT'\n\t\tWHEN 2 THEN 'INVOICE'\n\t\tWHEN 3 THEN 'CREDIT MEMO'\n\t\tWHEN 4 THEN 'FINANCE CHARGE MEMO'\n\t\tWHEN 5 THEN 'REMINDER'\n\t\tWHEN 6 THEN 'REFUND'\n\t\tELSE 'UNKNOWN'\n\tEND [Document_Type],\n\tIIF(SUM(dcle.Open_Amount) >= 0, 'CREDIT', 'DEBIT') as DEBIT_CREDIT_INDICATOR,\n\tSUM(dcle.Open_Amount_LCY) as TOTAL_LOCAL_AMOUNT,\n\tSUM(dcle.Open_Amount) as TOTAL_DOC_AMOUNT,\n\tSUM(cle.[Open]) as TOTAL_OPEN_ITEMS\nFROM\n\tdbo.[@{pipeline().parameters.sourceSchema}$Cust_ Ledger Entry] cle\n\tLEFT JOIN DetailedCustLedgerEntryCTE dcle ON cle.[Entry No_] = dcle.[Cust_ Ledger Entry No_]\nGROUP BY\n\tcle.[Customer No_],\n\tCASE cle.[Document Type]\n\t\twhen 0 THEN 'N/A'\n\t\tWHEN 1 THEN 'PAYMENT'\n\t\tWHEN 2 THEN 'INVOICE'\n\t\tWHEN 3 THEN 'CREDIT MEMO'\n\t\tWHEN 4 THEN 'FINANCE CHARGE MEMO'\n\t\tWHEN 5 THEN 'REMINDER'\n\t\tWHEN 6 THEN 'REFUND'\n\t\tELSE 'UNKNOWN'\n\tEND",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Document_Type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DEBIT_CREDIT_INDICATOR",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DEBIT_CREDIT_INDICATOR",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TOTAL_LOCAL_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "TOTAL_LOCAL_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "TOTAL_DOC_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "TOTAL_DOC_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "TOTAL_OPEN_ITEMS",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "TOTAL_OPEN_ITEMS",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavAU",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "BalancingExtract",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "BalancingExtract",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"sourceSchema": {
+				"type": "string",
+				"defaultValue": "DYWIDAG Construction"
+			},
+			"sourceTable": {
+				"type": "string",
+				"defaultValue": "Cust_ Ledger Entry"
+			},
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "AP-AU01-BalancingExtracts"
+			}
+		},
+		"folder": {
+			"name": "AU"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-02-24T12:30:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

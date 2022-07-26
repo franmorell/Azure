@@ -1,0 +1,353 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "AM-BR01"
+							}
+						],
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"AbsoluteUrl./rest/api/DSIWS001/v1/customermaster": "$.NextRequest",
+							"MaxRequestNumber": "2"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['terms_desc']"
+								},
+								"sink": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['mail_postal_code']"
+								},
+								"sink": {
+									"name": "Post Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['currency']"
+								},
+								"sink": {
+									"name": "Currency_code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['factoring_info']"
+								},
+								"sink": {
+									"name": "Factoring",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['erp']"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['credit_limit']"
+								},
+								"sink": {
+									"name": "Credit Limit (LCY)",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['country_code']"
+								},
+								"sink": {
+									"name": "Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['credit_limit_used']"
+								},
+								"sink": {
+									"name": "credit_limit_used",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['department_code']"
+								},
+								"sink": {
+									"name": "Department_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['mail_state']"
+								},
+								"sink": {
+									"name": "State",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['business_unit']"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['last_payment_received_date']"
+								},
+								"sink": {
+									"name": "last_payment_received_date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['language_code']"
+								},
+								"sink": {
+									"name": "Language_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['next_review_date']"
+								},
+								"sink": {
+									"name": "Next_Review_Date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['mail_city']"
+								},
+								"sink": {
+									"name": "City",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['credit_status']"
+								},
+								"sink": {
+									"name": "credit_status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['credit_exposure']"
+								},
+								"sink": {
+									"name": "Credit_Exposure",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['mail_country']"
+								},
+								"sink": {
+									"name": "Cust_Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['salesrep']"
+								},
+								"sink": {
+									"name": "Salesperson Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['blocked']"
+								},
+								"sink": {
+									"name": "Blocked",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['mail_address1']"
+								},
+								"sink": {
+									"name": "Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['mail_address2']"
+								},
+								"sink": {
+									"name": "Address 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['credit_analyst_or_collector']"
+								},
+								"sink": {
+									"name": "Credit_Analyst",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['highest_credit_limit_used']"
+								},
+								"sink": {
+									"name": "highest_credit_limit_used",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['customer_name']"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['date_acct_opened']"
+								},
+								"sink": {
+									"name": "date_acct_opened",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['balance']"
+								},
+								"sink": {
+									"name": "Balance",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['country']"
+								},
+								"sink": {
+									"name": "Country_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['bank_communication']"
+								},
+								"sink": {
+									"name": "Bank_Communication",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['RunId']"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['SystemId']"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "$['items']"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TOTVS_CustomerMaster",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "raw_CustomerExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "BR/Old"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-17T19:01:53Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

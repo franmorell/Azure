@@ -1,0 +1,23 @@
+{
+	"name": "NavKR",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Data Source=ServerNAV;Initial Catalog=NAVKR;User ID=KR-HighRadius_Nav",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "DYWIDAG_KeyVault_LinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "NavKR"
+			}
+		},
+		"connectVia": {
+			"referenceName": "NavKR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

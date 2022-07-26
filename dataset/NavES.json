@@ -1,0 +1,13 @@
+{
+	"name": "NavES",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NavES",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

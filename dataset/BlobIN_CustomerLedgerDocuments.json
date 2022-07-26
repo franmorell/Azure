@@ -1,0 +1,126 @@
+{
+	"name": "BlobIN_CustomerLedgerDocuments",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "HROpenItems_*.csv",
+				"folderPath": "IN",
+				"container": "highradius"
+			},
+			"columnDelimiter": "?",
+			"escapeChar": "\"",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "COMPANY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_NAME",
+				"type": "String"
+			},
+			{
+				"name": "DOCUMENT_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "OPEN_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "APPLICATION_ID",
+				"type": "String"
+			},
+			{
+				"name": "DOCUMENT_NUMBER",
+				"type": "String"
+			},
+			{
+				"name": "DOCUMENT_TYPE",
+				"type": "String"
+			},
+			{
+				"name": "POSTING_DATE",
+				"type": "String"
+			},
+			{
+				"name": "TERMS_DESC",
+				"type": "String"
+			},
+			{
+				"name": "DUE_DATE",
+				"type": "String"
+			},
+			{
+				"name": "DOCUMENT_CURRENCY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "COMPANY_CURRENCY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "PURCHASE_ORDER",
+				"type": "String"
+			},
+			{
+				"name": "ORDER_NUMBER",
+				"type": "String"
+			},
+			{
+				"name": "DISCOUNT_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "DISCOUNT_DUE_DATE",
+				"type": "String"
+			},
+			{
+				"name": "CLEARING_DATE",
+				"type": "String"
+			},
+			{
+				"name": "BUSINESS_UNIT",
+				"type": "String"
+			},
+			{
+				"name": "RETENTION_INDICATOR",
+				"type": "String"
+			},
+			{
+				"name": "SHIP_TO_COUNTRY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "SALES_PERSON",
+				"type": "String"
+			},
+			{
+				"name": "OPEN",
+				"type": "String"
+			},
+			{
+				"name": "DSI_JOB_NO",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

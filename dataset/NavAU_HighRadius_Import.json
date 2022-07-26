@@ -1,0 +1,49 @@
+{
+	"name": "NavAU_HighRadius_Import",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NavAU",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "HighRadiusOutbound"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "timestamp",
+				"type": "timestamp"
+			},
+			{
+				"name": "Company Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Customer No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Credit Limit",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "HRC Customer No_",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Next Review Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DYWIDAG Construction$HighRadius Import"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

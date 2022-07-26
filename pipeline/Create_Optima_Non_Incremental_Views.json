@@ -1,0 +1,158 @@
+{
+	"name": "Create_Optima_Non_Incremental_Views",
+	"properties": {
+		"activities": [
+			{
+				"name": "LoopTableNames",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetTableNames",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetTableNames').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "usp_Generate_View_For_DB",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[usp_Generate_View_For_DB]",
+								"storedProcedureParameters": {
+									"FileName": {
+										"value": {
+											"value": "@{item().File_Name}",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"SourceName": {
+										"value": {
+											"value": "@{pipeline().parameters.SourceName}",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"TableName": {
+										"value": {
+											"value": "@{item().Short_Table_Name}",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"schema": {
+										"value": {
+											"value": "@{item().Table_Schema}",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"vwName": {
+										"value": {
+											"value": "vw_@{pipeline().parameters.SourceName}_@{item().Table_Schema}_@{item().Short_Table_Name}",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"includeHash": {
+										"value": {
+											"value": "@{pipeline().parameters.IncludeRowhash}",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"incrementalFlag": {
+										"value": {
+											"value": "@{pipeline().parameters.incrementalFlag}",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "DYWIDAG_LDW_Linked_Service",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "GetTableNames",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderStoredProcedureName": "[dbo].[usp_Optima_List_Tables_By_Ingestion_Type]",
+						"storedProcedureParameters": {
+							"ingestion_type": {
+								"type": "String",
+								"value": {
+									"value": "@{pipeline().parameters.ingestion_type}",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DYWIDAG_LDW_DS",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "ComarchPL"
+			},
+			"ingestion_type": {
+				"type": "string",
+				"defaultValue": "DWM"
+			},
+			"IncludeRowhash": {
+				"type": "string",
+				"defaultValue": "T"
+			},
+			"incrementalFlag": {
+				"type": "string",
+				"defaultValue": "F"
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Create Views"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-22T12:59:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

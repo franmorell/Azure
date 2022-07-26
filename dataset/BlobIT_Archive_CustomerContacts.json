@@ -1,0 +1,22 @@
+{
+	"name": "BlobIT_Archive_CustomerContacts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Blob IT"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "IT/Archive",
+				"container": "highradius"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

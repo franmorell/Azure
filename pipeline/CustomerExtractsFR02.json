@@ -1,0 +1,615 @@
+{
+	"name": "CustomerExtractsFR02",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-FR02"
+							}
+						],
+						"query": "Select \t\n\t/*(select HR_ERP from comptatb.fdhrparam)*/'AS400' as ERP,\n\t(select HR_STE from comptatb.fdhrparam) as Company_ID,\n\tclclie as customer_id,\t\t\t\t   \n    case\n\t\twhen clpays <> ' '\tthen\n\t   clpays \n        else\n        'FR'\n    end as Country_code,\n\tcase\n\t\twhen clpays <> ' '\tthen\n\t\t\t(Select talibe from comptatb.table1 where tanom = 'PAYS' and taclef = clpays)\n\t\t\telse\n\t\t\t'France'\n\t\tend  as Country ,\n\tclnom as customer_name ,\n\tcladr1 as mail_addres1, cladr2 as mail_adress2 ,\n\tclvill as mail_city, '' as mail_state,\n\tclptt as mail_postal_code ,\n\tcase\n\t\twhen clpays <> ' '\tthen\n\t\t\t(Select clpays from comptatb.table1 where tanom = 'PAYS' and taclef = clpays)\n\t\t\telse\n\t\t\t'FR'\n\t\tend  as mail_Country ,\n\tconcat(concat(concat(concat(clmreg, ' ŕ '), clnjp),' jours, le '),cljec) as term_desc ,\n\tcase \n\t\tWhen (Select crrepr from comptatb.clire where cr41 = 41 and crclie = clclie and crserv = ' ') is not null then\n\t\t\tCase\n\t\t\twhen (Select  talibe from comptatb.table1 where tanom = 'REPRE' and taclef = (Select crrepr from comptatb.clire where cr41 = 41 and crclie = clclie and crserv = ' '))  is not null\n\t\t\tthen (Select  talibe from comptatb.table1 where tanom = 'REPRE' and taclef = (Select crrepr from comptatb.clire where cr41 = 41 and crclie = clclie and crserv = ' ')) \n\t\t\telse (Select crrepr from comptatb.clire where cr41 = 41 and crclie = clclie and crserv = ' ')\n\t\t\tend\n\t\telse 'Unknown'\n\tend as salesrep,\n\tcase\n\t\twhen clsolv = '1' then 'Active'\n\t\twhen clsolv = '2' then 'Active'\t\n\t\twhen clsolv = '3' then 'Active'\n\t\twhen clsolv = '4' then 'Active'\t\n\t\twhen clsolv = '5' then 'Active'\t\n\t\twhen clsolv = '0' then 'Blocked'\t\n\t\twhen clsolv = 'A' then 'Blocked'\t\n\t\twhen clsolv = 'B' then 'Blocked'\t\n\t\twhen clsolv = 'C' then 'Blocked'\t\n\t\twhen clsolv = 'D' then 'Blocked'\t\n\t\twhen clsolv = 'E' then 'Blocked'\n\t\telse 'Blocked'\n\tend as credit_status,  \n\tCAST(CONCAT(CONCAT(CONCAT(CONCAT(cldcrs*100+cldcra,'-'),substr(100+cldcrm, 2, 2)),'-'), substr(100+cldcrj, 2, 2)) AS DATE) as date_acct_opened,\n\tcldcsf * 1000 as credit_limit,\n\t0 as credit_limit_used,\n\tcase\n        When (select sum(hcpmff) from comptatb.fdhclie where hcpcpt = concat('41   ',clclie)) is not null\n        then (select sum(hcpmff) from comptatb.fdhclie where hcpcpt = concat('41   ',clclie))\n        else 0\n    end as Balance,\n\tCAST(NULL AS DECIMAL(10,2)) as highest_credit_limit_used,\n\tCAST(NULL AS DATE) as last_payment_received_date,\n\tCAST(NULL AS DECIMAL(10,2)) as last_payment_received_amount,\n    CASE\n\t\twhen clpays <> ' '\tthen\n\t\tCASE \t\n\t       \twhen (Select taref2 from comptatb.table1 where tanom = 'PAYS' and taclef = clpays) = 'F' then'FR'\n\t\twhen (Select taref2 from comptatb.table1 where tanom = 'PAYS' and taclef = clpays) = 'A' then'EN'\n\t\telse 'FR'\n\t\tend\n        else \n        'FR'\n    end as Language_code,\n\t'' as bank_communication,\n\tclcdev as currency_code,\n\tCAST(NULL AS DATE) as next_Review_Date,\n\t'' as Credit_Analyst,\n\tCAST(NULL AS DECIMAL(10,2)) as credit_exposure,\n\t(select HR_BUN from COMPTATB.fdhrparam) as business_Unit,\n\t'' as Geographical_Location,\n\t'' as Department_Code,\n\t'' as blocked,\n\tCase\n\t\tWhen clcolc = 41199800 \n\t\t\tthen 1 --Y\n\t\t\telse 0 --N\n\tend as Factoring_info,\n       clcee as VAT_REGISTRATION_NUMBER                         \n       from comafitb.focli                                                   \n       where clcs41 = 41  and clcsup = ' '               \n"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COUNTRY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Country_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_ADDRES1",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_ADRESS2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Address 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_CITY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "City",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_STATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "State",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_POSTAL_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Post Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MAIL_COUNTRY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Cust_Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TERM_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SALESREP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Salesperson Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_STATUS",
+									"type": "String"
+								},
+								"sink": {
+									"name": "credit_status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DATE_ACCT_OPENED",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "date_acct_opened",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_LIMIT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Credit Limit (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_LIMIT_USED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "credit_limit_used",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "BALANCE",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Balance",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "HIGHEST_CREDIT_LIMIT_USED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "highest_credit_limit_used",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "LAST_PAYMENT_RECEIVED_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "last_payment_received_date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "LAST_PAYMENT_RECEIVED_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "last_payment_received_amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "LANGUAGE_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Language_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BANK_COMMUNICATION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Bank_Communication",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CURRENCY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency_code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NEXT_REVIEW_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Next_Review_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_ANALYST",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Credit_Analyst",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREDIT_EXPOSURE",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Credit_Exposure",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "GEOGRAPHICAL_LOCATION",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Geographical_Location",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DEPARTMENT_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Department_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BLOCKED",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Blocked",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FACTORING_INFO",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Factoring",
+									"type": "Int16"
+								}
+							},
+							{
+								"source": {
+									"name": "VAT_REGISTRATION_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "VAT Registration No_",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AS400FR",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CustomerExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerExtracts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-FR02-CustomerExtract"
+			}
+		},
+		"folder": {
+			"name": "FR"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-25T20:29:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

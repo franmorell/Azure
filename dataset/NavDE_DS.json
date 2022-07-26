@@ -1,0 +1,16 @@
+{
+	"name": "NavDE_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NavDEandCZ",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "TAGZ/Source_Datasets"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,150 @@
+{
+	"name": "TEST_Ingest_NavUSandCA_Tables_x_5000_Incremental",
+	"properties": {
+		"description": "Ingests up to 5000 tables from source. (Lookup limits to 5000 max.)\nNumber of tables to ingest is set in parameters in 'Ingest All...'",
+		"activities": [
+			{
+				"name": "CopyTable_with_timestamp",
+				"description": "If there are no records already, then timestamp = -1. This will ingest ALL data from the source table, if there is any (we've already checked for row existence). timestamp = -2 if error occurred (e.g. the view does not exist?) - don't ingest.",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "LookupTimestamp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT \n * FROM [dbo].[ DSI USA ** Live **$Vendor Ledger Entry ]\n where  \n    convert(BIGint,convert(varbinary,timestamp,1)) > @{activity('LookupTimestamp').output.firstRow.maxInt} \n   and @{activity('LookupTimestamp').output.firstRow.maxInt}>-2 \n\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "NavUSandCA_DS",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Destination_TableData_Incremental_DataLake_DS",
+						"type": "DatasetReference",
+						"parameters": {
+							"path": {
+								"value": "RAW/NavUSandCA/[dbo].[ DSI USA __ Live __$Vendor Ledger Entry]/@{utcNow('yyyy')}/@{utcNow('MM')}/@{utcNow('dd')}",
+								"type": "Expression"
+							},
+							"file": {
+								"value": "[dbo].[ DSI USA __ Live __$Vendor Ledger Entry]",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "LookupTimestamp",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderStoredProcedureName": "[dbo].[usp_Select_Latest_Timestamp_For_Table_Direct]",
+						"storedProcedureParameters": {
+							"SourceName": {
+								"type": "String",
+								"value": {
+									"value": "@{pipeline().parameters.SourceName}",
+									"type": "Expression"
+								}
+							},
+							"schema": {
+								"type": "String",
+								"value": {
+									"value": "dbo",
+									"type": "Expression"
+								}
+							},
+							"tbl": {
+								"type": "String",
+								"value": {
+									"value": " DSI USA __ Live __$Vendor Ledger Entry",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DYWIDAG_LDW_DS",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"pageNo": {
+				"type": "int",
+				"defaultValue": 1
+			},
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "NavUSandCA"
+			},
+			"PageSize": {
+				"type": "int",
+				"defaultValue": 5000
+			}
+		},
+		"folder": {
+			"name": "TAGZ/Incremental Ingestion/Ingest x 5000"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-24T11:04:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,49 @@
+{
+	"name": "NavKR_HighRadius_Import",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NavKR",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "HighRadiusOutbound"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "timestamp",
+				"type": "timestamp"
+			},
+			{
+				"name": "Company Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Customer No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Credit Limit",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 20
+			},
+			{
+				"name": "HRC Customer No_",
+				"type": "varchar"
+			},
+			{
+				"name": "Next Review Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DSI - Korea$HighRadius Import"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,56 @@
+{
+	"name": "Incremental Ingestion Schedule -- Asia -- TAGZ",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Ingest_All_NavKR_Tables_Incremental",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "NavKR",
+					"PageSize": 270
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "Ingest_All_NavHK_Tables_Incremental",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "NavHK",
+					"PageSize": 1300
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "Ingest_All_NavAU_Tables_Incremental",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "NavAU",
+					"PageSize": 2700
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-02-06T15:59:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						16
+					]
+				}
+			}
+		}
+	}
+}

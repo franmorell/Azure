@@ -1,0 +1,572 @@
+{
+	"name": "CustomerExtractsUKSage",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "OdbcSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-UK02"
+							},
+							{
+								"name": "language_code",
+								"value": "EN"
+							},
+							{
+								"name": "ERP",
+								"value": "SAGE50"
+							},
+							{
+								"name": "country_code",
+								"value": "GB"
+							},
+							{
+								"name": "Business_Unit",
+								"value": "LIFESPAN"
+							}
+						],
+						"query": "SELECT\n\tCOMPANY.NAME AS 'company_id',\n\tSALES_LEDGER.ACCOUNT_REF AS 'customer_id',\n\tSALES_LEDGER.COUNTRY_CODE AS 'customer_country_code',\n\tSALES_LEDGER.NAME AS 'customer_name',\n\tSALES_LEDGER.ADDRESS_1 AS 'mail_address1',\n\tSALES_LEDGER.ADDRESS_2 AS 'mail_address2',\n\tSALES_LEDGER.ADDRESS_3 AS 'mail_city',\n\tSALES_LEDGER.ADDRESS_4 AS 'mail_state',\n\tSALES_LEDGER.ADDRESS_5 AS 'mail_postal_code',\n\tSALES_LEDGER.PAYMENT_DUE_DAYS AS 'terms_desc',\n\tSALES_LEDGER.ANALYSIS_1 AS 'salesrep',\n\tSALES_LEDGER.ANALYSIS_1 AS 'salesrep_name',\n\tSALES_LEDGER.CREDIT_POSITION AS 'credit_status',\n\tSALES_LEDGER.DATE_ACCOUNT_OPENED AS 'date_acct_opened',\n\tSALES_LEDGER.CREDIT_LIMIT AS 'credit_limit',\n\tSALES_LEDGER.BALANCE AS 'Balance',\n\tSALES_LEDGER.BALANCE AS 'credit_limit_used',\n\tSALES_LEDGER.BALANCE AS 'credit_exposure',\n\tSALES_LEDGER.DATE_NEXT_CREDIT AS 'next_review_date',\n\tSALES_LEDGER.LAST_PAYMENT_DATE AS 'last_payment_received_date',\n\tCURRENCY.CODE AS 'currency',\n\tSALES_LEDGER.ACCOUNT_ON_HOLD AS 'Blocked',\n\tSALES_LEDGER.VAT_REG_NUMBER AS 'VAT_Registration_No'\nFROM \n\tCOMPANY COMPANY,\n\tSALES_LEDGER SALES_LEDGER\n\tLEFT JOIN CURRENCY CURRENCY ON SALES_LEDGER.CURRENCY=CURRENCY.NUMBER",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "customer_id",
+									"type": "String"
+								},
+								"sink": {
+									"name": "No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "company_id",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Company_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "country_code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "customer_name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "mail_address1",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "mail_address2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Address 2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "mail_city",
+									"type": "String"
+								},
+								"sink": {
+									"name": "City",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "mail_state",
+									"type": "String"
+								},
+								"sink": {
+									"name": "State",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "mail_postal_code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Post Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "customer_country_code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Cust_Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "terms_desc",
+									"type": "Int16"
+								},
+								"sink": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "salesrep",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Salesperson Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "salesrep_name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Salesperson Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "credit_status",
+									"type": "String"
+								},
+								"sink": {
+									"name": "credit_status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "date_acct_opened",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "date_acct_opened",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "credit_limit",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Credit Limit (LCY)",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "credit_limit_used",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "credit_limit_used",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Balance",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Balance",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "last_payment_received_date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "last_payment_received_date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "language_code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Language_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "currency",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency_code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "next_review_date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Next_Review_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "credit_exposure",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Credit_Exposure",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Business_Unit",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Blocked",
+									"type": "Int16"
+								},
+								"sink": {
+									"name": "Blocked",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "VAT_Registration_No",
+									"type": "String"
+								},
+								"sink": {
+									"name": "VAT Registration No_",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DatumUK",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CustomerExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerExtracts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-UK02-CustomerExtract"
+			}
+		},
+		"folder": {
+			"name": "UKSage"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-15T15:31:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

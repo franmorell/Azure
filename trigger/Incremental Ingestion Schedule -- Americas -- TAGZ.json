@@ -1,0 +1,36 @@
+{
+	"name": "Incremental Ingestion Schedule -- Americas -- TAGZ",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Ingest_All_NavUSandCA_Tables_Incremental",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "NavUSandCA",
+					"PageSize": 1700
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-02-06T16:10:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						7
+					]
+				}
+			}
+		}
+	}
+}

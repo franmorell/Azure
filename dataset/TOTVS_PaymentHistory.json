@@ -1,0 +1,27 @@
+{
+	"name": "TOTVS_PaymentHistory",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "TOTVS_BR_PROD",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"startdate": {
+				"type": "string"
+			},
+			"finishdate": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat('rest/api/DSIWS005/v1/paymenthistory/startdate/',dataset().startdate,'/finishdate/',dataset().finishdate)",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

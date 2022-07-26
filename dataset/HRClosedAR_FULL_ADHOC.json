@@ -1,0 +1,30 @@
+{
+	"name": "HRClosedAR_FULL_ADHOC",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HighRadiusSFTP",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "HighRadius_PROD"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": {
+					"value": "@concat('HRClosedAR_FULL_',formatDateTime(pipeline().TriggerTime,'yyyyMMdd'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": "/inbound/test/arextract"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

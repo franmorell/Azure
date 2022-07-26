@@ -1,0 +1,13 @@
+{
+	"name": "NavPL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NavPL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

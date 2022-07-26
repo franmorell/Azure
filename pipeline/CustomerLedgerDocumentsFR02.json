@@ -1,0 +1,515 @@
+{
+	"name": "CustomerLedgerDocumentsFR02",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-FR02"
+							}
+						],
+						"query": "\nSelect \n\t/*(select HR_ERP from COMPTATB.fdhrparam)*/'AS400' as ERP,\n\t(select HR_STE from COMPTATB.fdhrparam) as Company_ID,\n    substr(hcpcpt, 6, 5) as Customer_ID,\n\t(select clnom from COMafiTB.focli where clcs41 = 41 and clclie = substr(hcpcpt, 6, 5)) as Customer_name,\n\n\thcpmff as total_Amount,\n\tcase\n\t\twhen hcplet <> ' ' then 0\n\t\telse hcpmff\n\tend as Open_amt,\n\tconcat(concat(concat(hcpcpt,(concat(concat(concat(concat (hcpss*100+hcpaa, '-'), hcpmm), '-'), hcpjj))),'-'),hcpran) as ApplicationID,\n\n  \tcase\n         When trim(hcpnfa) <> '' then\n \t       trim(hcpnfa) \n         else\n            concat(trim(hcpjna), hcppie)\n    end as document_no,  \n\n\tCase \n\t\tWhen hcpfar = 'F' then 'INVOICE'\n\t\tWhen hcpfar = 'A' then 'CREDIT MEMO'\n\t\tWhen hcpfar = 'R' then 'PAYMENT'\n\t\tWhen hcpfar = 'D' then\n\t\t\tcase \n\t\t\tWhen hcpmrg = 'IMP' then 'DISHONORED'\n\t\t\tElse  'REFUND'\n\t\t\tEnd \n\t\telse\n\t\t\tcase \n\t\t\twhen hcpmff > 0 then 'DEBIT NOTE'\n\t\t\telse 'CREDIT NOTE'\n\t\t\tend \n\tend as document_type,\n\tconcat(concat(concat(concat(concat (hcpss*100+hcpaa, '-'), substr(100+hcpmm, 2, 2)), '-'), substr(100+hcpjj, 2, 2)),' 00:00:00') as Posting_Date,  \n\tCase\n      \tWhen hcpmrg = 'CB' then 'CREDIT'\n      \tWhen hcpmrg = 'LCR' then 'DIRECT'\n      \tWhen hcpmrg = 'IMP' then 'DRAFT'\n      \tWhen hcpmrg = '  ' then 'CASH'\n      \tWhen (Select taver3 from COMPTATB.table where tanom = 'FDMOD' and taclef = hcpmrg) = 'C' then 'CHECK' \n\t\tWhen (Select taver3 from COMPTATB.table where tanom = 'FDMOD' and taclef = hcpmrg) = 'T' then 'DRAFT' \n       \tWhen (Select taver3 from COMPTATB.table where tanom = 'FDMOD' and taclef = hcpmrg) = 'V' then 'WIRE' \n       \tWhen (Select taver3 from COMPTATB.table where tanom = 'FDMOD' and taclef = hcpmrg) = 'E' then 'CASH' \n\t\t\t\n        else hcpmrg\n    end as terms_desc, \n\n\tCase\n\t\twhen concat(concat(concat(concat(concat (hcpecs*100+hcpeca, '-'), substr(100+hcpecm, 2, 2)), '-'), substr(100+hcpecj, 2, 2)),' 00:00:00') = '0-00-00 00:00:00'\n\t\tthen NULL\n\t\telse concat(concat(concat(concat(concat (hcpecs*100+hcpeca, '-'), substr(100+hcpecm, 2, 2)), '-'), substr(100+hcpecj, 2, 2)),' 00:00:00')\n\tend as Net_Due_Date,\n\n\tCase\n      \t  when hcpcdv = '   ' then 'EUR'\n\t  else hcpcdv\n\tend as currency,\n\n\n\t'EUR' as company_code_currency,\n\t'' as po_no,  \n\t'' as order_No,\n\t'' as Discount_Amount,\n\tCAST(NULL AS DATE) as discount_Due_Date,\n\tcase\n\t\twhen hcplet <> ' ' then concat(concat(concat(concat(concat(substr(concat(hcpdls,hcpdal), 1, 4), '-'), substr(hcpdal, 3, 2)), '-'), substr(hcpdal, 5, 2)),' 00:00:00')\n\t\telse NULL\n\tend as clearing_date,\n\tCase\n\t   when (select svcd from COMPTATB.cccchanti where cccc = hcpnfa) = 'G' then 'GT'\n\t   when (select svcd from COMPTATB.cccchanti where cccc = hcpnfa) = 'P' then 'PT'\n\t   else (select HR_BUN from COMPTATB.fdhrparam)\t\n\tend as Business_Unit,\n\n\t'' as retention_indicator,\n\t'FR' as Ship_to_Country_Code,\n\t'' as Sales_person,\n\t'' as DSI_Job_No  ,\n\tcase\n\t\twhen hcplet <> ' ' then 0\n\t\telse 1\n\tend as Open\n\tfrom COMPTATB.fdhclie\n\twhere hcpfar <> 'R'\t\n"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Company_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TOTAL_AMOUNT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Document_Amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "OPEN_AMT",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "Open_Amount",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_NO",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document No_",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "APPLICATIONID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "POSTING_DATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Posting Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "TERMS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Payment Terms Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NET_DUE_DATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Due Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CURRENCY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Currency_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE_CURRENCY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Local_Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PO_NO",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Purchase_Order",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORDER_NO",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Order_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DISCOUNT_DUE_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Discount_Due_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "CLEARING_DATE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Clearing_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SHIP_TO_COUNTRY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ship_To_Country_Code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SALES_PERSON",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SalespersonCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DSI_JOB_NO",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DSI_Job_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OPEN",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Open",
+									"type": "Byte"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AS400FR",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CustomerLedgerDocuments",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "CustomerLedgerDocuments",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-FR02-CustomerLedgerDocuments"
+			}
+		},
+		"folder": {
+			"name": "FR"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-28T14:43:31Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

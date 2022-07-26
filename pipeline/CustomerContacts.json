@@ -1,0 +1,353 @@
+{
+	"name": "CustomerContacts",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "DECLARE @LastLoadDate DATETIME\nSELECT @LastLoadDate = MAX(EndDateTime)\nFROM load.Run\nWHERE SourceName = '@{pipeline().parameters.SourceName}'\nAND [Status] = 'Success';\n\ndeclare @test varchar(255);\n\nSELECT \n    ds.SYSTEM_NAME as ERP,\n    hc.CUSTOMER_NUMBER AS CUSTOMER_ID,\n    scc.NAME,\n    scc.BUSINESS_UNIT,\n    hcc.SYSTEM_ID AS COMPANY_CODE,\n    scc.SET_ID,\n    scc.PRIMARY_CONTACT_FLAG,\n    hcc.FIRST_NAME AS CONTACT_FIRST_NAME,\n    hcc.LAST_NAME AS CONTACT_LAST_NAME,\n    scc.ROLE,\n    REPLACE(REPLACE(scc.PHONE_NUMBER, CHAR(13),''), CHAR(10), '') AS PHONE_NUMBER,\n    REPLACE(REPLACE(scc.EMAIL_ADDRESS, CHAR(13),''), CHAR(10), '') AS EMAIL_ADDRESS,\n    scc.FAX\nFROM\n    dv.H_CUSTOMER_CONTACT hcc WITH(NOLOCK)\n    LEFT JOIN dv.DICT_SYSTEM ds WITH(NOLOCK) ON hcc.SYSTEM_ID = ds.SYSTEM_ID\n    JOIN dv.tfnS_CUSTOMER_CONTACT_BY_DATE(GETDATE()) scc ON hcc.CUSTOMER_CONTACT_HASH_KEY = scc.CUSTOMER_CONTACT_HASH_KEY\n    JOIN dv.tfnL_CUSTOMER_CUSTOMER_CONTACT_BY_DATE(GETDATE()) lccc ON hcc.CUSTOMER_CONTACT_HASH_KEY = lccc.CUSTOMER_CONTACT_HASH_KEY\n    JOIN dv.H_CUSTOMER hc WITH(NOLOCK) ON lccc.CUSTOMER_HASH_KEY = hc.CUSTOMER_HASH_KEY\n    JOIN dv.tfnS_CUSTOMER_CONTACT_DELETION_BY_DATE(GETDATE()) sccd ON hcc.CUSTOMER_CONTACT_HASH_KEY = sccd.CUSTOMER_CONTACT_HASH_KEY\nWHERE 1=1\n    AND sccd.IS_DELETED = 'NO'\n    AND hcc.SYSTEM_ID IN (\n        'EU-PL01','EU-CZ01','EU-UK01',\n        'EU-ES01','EU-NL01','EU-NL02',\n        'EU-BE01','AP-AU01')\n    /*AND (hcc.LOAD_DTS > @LastLoadDate \n        OR scc.LOAD_DTS > @LastLoadDate \n        OR lccc.LOAD_DTS > @LastLoadDate \n        OR hc.LOAD_DTS > @LastLoadDate\n    )*/\n\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "SftpWriteSettings",
+							"operationTimeout": "01:00:00",
+							"useTempFileRename": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CUSTOMER_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BUSINESS_UNIT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "COMPANY_CODE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SET_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "SET_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PRIMARY_CONTACT_FLAG",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRIMARY_CONTACT_FLAG",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CONTACT_FIRST_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CONTACT_FIRST_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CONTACT_LAST_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CONTACT_LAST_NAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ROLE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ROLE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PHONE_NUMBER",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PHONE_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EMAIL_ADDRESS",
+									"type": "String"
+								},
+								"sink": {
+									"name": "EMAIL_ADDRESS",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FAX",
+									"type": "String"
+								},
+								"sink": {
+									"name": "FAX",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DYWIDAG_DWH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "HRCustomerContacts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "DYWIDAG_DWH-HRCustomerContacts_TEST"
+			}
+		},
+		"folder": {
+			"name": "HighRadius_TEST"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-12T21:15:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

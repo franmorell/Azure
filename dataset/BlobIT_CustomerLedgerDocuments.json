@@ -1,0 +1,145 @@
+{
+	"name": "BlobIT_CustomerLedgerDocuments",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DywidagBIBLOBStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Blob IT"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "CustomerLedgerDocuments_EU-IT01__2021-07-02_10-34-12.csv",
+				"folderPath": "IT",
+				"container": "highradius"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ERP",
+				"type": "String"
+			},
+			{
+				"name": "Company_ID",
+				"type": "String"
+			},
+			{
+				"name": "Customer_No",
+				"type": "String"
+			},
+			{
+				"name": "Name",
+				"type": "String"
+			},
+			{
+				"name": "Document_Amount",
+				"type": "String"
+			},
+			{
+				"name": "Open_Amount",
+				"type": "String"
+			},
+			{
+				"name": "CustomerLedgerEntryNumber",
+				"type": "String"
+			},
+			{
+				"name": "Document No_",
+				"type": "String"
+			},
+			{
+				"name": "Document_Type",
+				"type": "String"
+			},
+			{
+				"name": "Posting Date",
+				"type": "String"
+			},
+			{
+				"name": "Payment Terms Code",
+				"type": "String"
+			},
+			{
+				"name": "Due Date",
+				"type": "String"
+			},
+			{
+				"name": "Currency_Code",
+				"type": "String"
+			},
+			{
+				"name": "Local_Currency",
+				"type": "String"
+			},
+			{
+				"name": "Purchase_Order",
+				"type": "String"
+			},
+			{
+				"name": "Order_No",
+				"type": "String"
+			},
+			{
+				"name": "Discount_Amount",
+				"type": "String"
+			},
+			{
+				"name": "Discount_Due_Date",
+				"type": "String"
+			},
+			{
+				"name": "Clearing_Date",
+				"type": "String"
+			},
+			{
+				"name": "Business_Unit",
+				"type": "String"
+			},
+			{
+				"name": "Retention_Indicator",
+				"type": "String"
+			},
+			{
+				"name": "Ship_to_Country_Code",
+				"type": "String"
+			},
+			{
+				"name": "SalespersonCode",
+				"type": "String"
+			},
+			{
+				"name": "SalespersonName",
+				"type": "String"
+			},
+			{
+				"name": "DSI_Job_No",
+				"type": "String"
+			},
+			{
+				"name": "Open",
+				"type": "String"
+			},
+			{
+				"name": "Retention_Amount",
+				"type": "String"
+			},
+			{
+				"name": "Dispute_Amount",
+				"type": "String"
+			},
+			{
+				"name": "User ID",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

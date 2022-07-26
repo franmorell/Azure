@@ -1,0 +1,26 @@
+{
+	"name": "testCols",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "tbl",
+				"type": "varchar"
+			},
+			{
+				"name": "col",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "testCols"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

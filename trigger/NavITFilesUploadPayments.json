@@ -1,0 +1,30 @@
+{
+	"name": "NavITFilesUploadPayments",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PaymentHistoryExtractsIT",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceName": "EU-IT01-PaymentHistoryExtracts",
+					"sourceSchema": "csv",
+					"sourceTable": "Payment_History_Extracts_EU-IT01"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/highradius/blobs/IT/Payments_EU-IT01",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/1ea1b55d-51c1-4506-9f0f-142fce9d3449/resourceGroups/BI_Solution/providers/Microsoft.Storage/storageAccounts/dywidagbiblobstorage",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

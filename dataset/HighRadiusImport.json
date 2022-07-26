@@ -1,0 +1,49 @@
+{
+	"name": "HighRadiusImport",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DYWIDAG_DWH",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "stg"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "HRC_CUSTOMER_NUMBER",
+				"type": "nvarchar"
+			},
+			{
+				"name": "COMPANY_CODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUST_NUMBER",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CREDIT_LIMIT_AMOUNT",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NEXT_REVIEW_DATE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RunId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SystemId",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "HighRadiusImport"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

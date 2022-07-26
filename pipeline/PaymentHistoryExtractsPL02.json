@@ -1,0 +1,475 @@
+{
+	"name": "PaymentHistoryExtractsPL02",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Log Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "RunId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "SystemId",
+								"value": "EU-PL02"
+							}
+						],
+						"sqlReaderQuery": "select\n\t'ERP' = 'OPT',\n\t'Company id/Code' = 'PARTEC SYSTEM Sp. z o.o.',\n\t'Deposit/application ID' = DKB_DKBID,\n\t'CREATION_DATE' = DKB_DataDok,\n\t'Customer ID' = pv.Pod_Kod,\n\t'Customer Name' = pv.Pod_Nazwa1 + ' ' + pv.Pod_Nazwa2 + ' ' + pv.Pod_Nazwa3,\n\t'Business Unit' = 'DY.CO',\n\t'REGION' = NULL,\n\t'TRANSACTION_ID' = DKB_NumerPelny,\n\t'DOCUMENT_TYPE' = 'PAYMENT',\n\t'TRANSACTION_DATE' = DKB_DataDok,\n\t'TRANSACTION_CURRENCY' = case when DKB_Waluta = '' then 'PLN' else DKB_Waluta end,\n\t'REPORTING_TX_AMOUNT' = NULL,\n\t'TX AMOUNT_APPLIED' = -1*DKB_Kwota,\n\t'INVOICE_NUMBER' = NULL,\n\t'DOCUMENT_DATE' = CAST(NULL AS DATE),\n\t'ORIG_TX_AMOUNT' = NULL,\n\t'PAYMENT_METHOD' = NULL,\n\t'Country' = NULL\nfrom \n\tcdn.DokumentyKBView\n\tjoin cdn.PodmiotyView pv on pv.Pod_PodmiotTyp = DKB_PodmiotTyp and pv.Pod_PodId = DKB_PodmiotId\nwhere \n\tDKB_PodmiotTyp = 1 \n\tand DKB_TypDokumentuKB = 2 \n\tand DKB_Kierunek = 1\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERP",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Company id/Code",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Company_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Deposit/application ID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "CustomerLedgerEntryNumber",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CREATION_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Creation Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DOCUMENT_DATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Customer_No",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Business Unit",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Business_Unit",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "REGION",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Region",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TRANSACTION_ID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transaction_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOCUMENT_TYPE",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Document_Type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TRANSACTION_DATE",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "Transaction_Date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "TRANSACTION_CURRENCY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transaction_Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "REPORTING_TX_AMOUNT",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "REPORTING_TX_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "TX AMOUNT_APPLIED",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "TX_AMOUNT_APPLIED",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "INVOICE_NUMBER",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "INVOICE_NUMBER",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORIG_TX_AMOUNT",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "ORIG_TX_AMOUNT",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "PAYMENT_METHOD",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "PAYMENT_METHOD",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Country",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "COUNTRY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RunId"
+								},
+								"sink": {
+									"name": "RunId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SystemId"
+								},
+								"sink": {
+									"name": "SystemId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ComarchPL",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "PaymentHistoryExtracts",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Log Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogStart]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Failed",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[load].[uspLogEnd]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceName": {
+							"value": {
+								"value": "@pipeline().parameters.SourceName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceType": {
+							"value": "SQL",
+							"type": "String"
+						},
+						"Status": {
+							"value": "Success",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "uspCopyData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Log Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[framework].[uspCopyData]",
+					"storedProcedureParameters": {
+						"RunId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SourceTableName": {
+							"value": "PaymentHistoryExtracts",
+							"type": "String"
+						},
+						"SourceTableSchema": {
+							"value": "stg",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "DYWIDAG_DWH",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"SourceName": {
+				"type": "string",
+				"defaultValue": "EU-PL02-PaymentHistoryExtracts"
+			}
+		},
+		"folder": {
+			"name": "PL Comarch"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-27T22:55:47Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

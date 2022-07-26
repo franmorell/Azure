@@ -1,0 +1,18 @@
+{
+	"name": "NavITFilesUploadPDF",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/highradius/blobs/IT_PDF/",
+			"blobPathEndsWith": ".pdf",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/1ea1b55d-51c1-4506-9f0f-142fce9d3449/resourceGroups/BI_Solution/providers/Microsoft.Storage/storageAccounts/dywidagbiblobstorage",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

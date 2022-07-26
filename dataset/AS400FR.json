@@ -1,0 +1,13 @@
+{
+	"name": "AS400FR",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AS400FR",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Db2Table",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
